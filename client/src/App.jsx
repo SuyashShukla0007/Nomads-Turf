@@ -1,11 +1,13 @@
-import React from 'react'
+import React from "react";
+import PhaserGame from "./components/PhaserGame";
 
-function App() {
+const App = () => {
   return (
-    <div className='text-6xl text-white'>
-      hello
+    <div>
+      <h1>Phaser Game in React</h1>
+      <PhaserGame />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

@@ -1,10 +1,35 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+// // src/main.js
+// import Phaser, { Scale } from 'phaser';
+// import GameScene from './GameScene.js';
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+// const config = {
+//   type: Phaser.AUTO,
+//   width: 960,
+//   height: 960,
+//   scene: [GameScene],
+//   scale: {
+//     mode: Phaser.Scale.FIT,
+//     autoCenter: Phaser.Scale.CENTER_BOTH
+//   },
+//   physics: {
+//     default: "arcade",
+//     arcade: {
+//       gravity: { y: 0 },
+//       debug: false,
+//     },
+//   },
+// };
+
+// new Phaser.Game(config);
+
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
     <App />
-  </StrictMode>,
-)
+  </React.StrictMode>
+);
