@@ -1,11 +1,12 @@
-import React from 'react'
-
-function App() {
+import React from "react";
+import PhaserGame from "./components/PhaserGame";
+import {Routes,Route} from 'react-router-dom'
+const App = () => {
   return (
-    <div className='text-6xl text-white'>
-      hello
-    </div>
-  )
-}
+    <Routes>
+      <Route path="/" element={<PhaserGame/>}></Route>
+    </Routes>
+  );
+};
 
-export default App
+export default App;
