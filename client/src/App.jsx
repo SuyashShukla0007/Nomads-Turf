@@ -1,12 +1,11 @@
 import React from "react";
 import PhaserGame from "./components/PhaserGame";
-
+import {Routes,Route} from 'react-router-dom'
 const App = () => {
   return (
-    <div>
-      <h1>Phaser Game in React</h1>
-      <PhaserGame />
-    </div>
+    <Routes>
+      <Route path="/" element={<PhaserGame/>}></Route>
+    </Routes>
   );
 };
 
