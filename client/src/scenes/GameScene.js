@@ -167,12 +167,15 @@ export default class GameScene extends Phaser.Scene {
       this.localPlayer.flipX = false;
     }
 
-    if (this.cursors.up.isDown) {
+    else if (this.cursors.up.isDown) {
       velocityY = -speed;
       this.localPlayer.anims.play("up", true);
     } else if (this.cursors.down.isDown) {
       velocityY = speed;
       this.localPlayer.anims.play("down", true);
+    }
+    else{
+      this.localPlayer.anims.stop();
     }
 
     // Update player velocity for movement
