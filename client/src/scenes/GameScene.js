@@ -11,8 +11,8 @@ export default class GameScene extends Phaser.Scene {
   preload() {
     // Load assets
     this.load.spritesheet("player", player, {
-      frameWidth: 64,
-      frameHeight: 64,
+      frameWidth: 16,
+      frameHeight: 16,
     });
 
     this.load.tilemapTiledJSON("map", tilemap);
@@ -37,7 +37,7 @@ export default class GameScene extends Phaser.Scene {
 
     // Create player sprite with physics
     this.localPlayer = this.physics.add.sprite(100, 800, "player");
-    this.localPlayer.setScale(0.8);
+    this.localPlayer.setScale(3);
     this.physics.add.collider(this.localPlayer, this.collisionLayer);
 
     this.cameras.main.startFollow(this.localPlayer, true, 0.08, 0.08); // Smooth follow
@@ -108,6 +108,38 @@ export default class GameScene extends Phaser.Scene {
     // Create cursor keys for movement
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    //animation for sideways movement
+
+    this.anims.create({
+      key: "sideway",
+      frames: this.anims.generateFrameNumbers("player", {
+        frames: [1, 6, , 11],
+      }),
+      frameRate: 10,
+      // repeat:-1
+    });
+
+    //animation for up movement
+
+    this.anims.create({
+      key: "down",
+      frames: this.anims.generateFrameNumbers("player", {
+        frames: [0, 5, , 10],
+      }),
+      frameRate: 10,
+      // repeat:-1
+    });
+
+
+    this.anims.create({
+      key: "up",
+      frames: this.anims.generateFrameNumbers("player", {
+        frames: [2, 7, , 12],
+      }),
+      frameRate: 10,
+      // repeat:-1
+    });
+
     // Add a debug layer to visualize the collision tiles
     // const debugGraphics = this.add.graphics().setAlpha(0.75);
     // this.collisionLayer.renderDebug(debugGraphics, {
@@ -127,14 +159,20 @@ export default class GameScene extends Phaser.Scene {
     // Handle movement using cursor keys
     if (this.cursors.left.isDown) {
       velocityX = -speed;
+      this.localPlayer.anims.play("sideway", true);
+      this.localPlayer.flipX = true;
     } else if (this.cursors.right.isDown) {
       velocityX = speed;
+      this.localPlayer.anims.play("sideway", true);
+      this.localPlayer.flipX = false;
     }
 
     if (this.cursors.up.isDown) {
       velocityY = -speed;
+      this.localPlayer.anims.play("up", true);
     } else if (this.cursors.down.isDown) {
       velocityY = speed;
+      this.localPlayer.anims.play("down", true);
     }
 
     // Update player velocity for movement
