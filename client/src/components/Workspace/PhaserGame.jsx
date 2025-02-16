@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Phaser from "phaser";
-import GameScene from "../scenes/GameScene";
+import GameScene from "../../scenes/GameScene";
 
 const PhaserGame = () => {
   const gameRef = useRef(null);
@@ -8,11 +8,11 @@ const PhaserGame = () => {
   useEffect(() => {
     const config = {
       type: Phaser.AUTO,
-      width: 960,
-      height: 960,
+      width: 1280,
+      height: 640,
       physics: {
         default: "arcade",
-        arcade: { debug: false },
+        arcade: { debug: true },
       },
       scene: [GameScene],
     };
