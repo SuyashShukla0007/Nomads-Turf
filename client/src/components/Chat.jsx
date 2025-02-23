@@ -1,4 +1,3 @@
-// src/components/ChatRoom.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import tileset from "../assets/tileset.png";
@@ -9,12 +8,10 @@ const ChatRoom = () => {
   const [newMessage, setNewMessage] = useState("");
   const chatEndRef = useRef(null);
 
-  // Auto-scroll to the latest message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Handle message submission
   const sendMessage = () => {
     if (newMessage.trim() === "") return;
     const message = {
@@ -35,7 +32,6 @@ const ChatRoom = () => {
         backgroundPosition: "center",
       }}
     >
-      {/* Header */}
       <h1
         className="text-4xl font-extrabold mb-4 tracking-wide"
         style={{
@@ -46,9 +42,7 @@ const ChatRoom = () => {
         Chat Room 💬
       </h1>
 
-      {/* Chat Box */}
       <div className="w-full max-w-4xl bg-white/90 rounded-2xl shadow-2xl p-6 backdrop-blur-lg">
-        {/* Message Display */}
         <div
           className="h-96 overflow-y-auto p-4 rounded-lg space-y-4 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100"
           style={{ border: "4px solid #007BAC" }}
@@ -79,7 +73,6 @@ const ChatRoom = () => {
           <div ref={chatEndRef} />
         </div>
 
-        {/* Input Box */}
         <div className="flex items-center gap-4 mt-6">
           <input
             type="text"
@@ -98,7 +91,6 @@ const ChatRoom = () => {
         </div>
       </div>
 
-      {/* Back to Main Area Button */}
       <button
         onClick={() => navigate("/home")}
         className="fixed bottom-6 text-white px-6 py-3 mt-8 rounded-full transition-transform transform hover:scale-110 shadow-xl"
