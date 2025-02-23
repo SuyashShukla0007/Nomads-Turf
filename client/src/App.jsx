@@ -6,6 +6,7 @@ import PhaserGame from "./components/Workspace/PhaserGame";
 import Board from "./components/Board";
 import Chat from "./components/Chat";
 
+import ChooseWorkspace from "./pages/ChooseWorkspace";
 const App = () => {
   return (
     <Routes>
@@ -15,6 +16,8 @@ const App = () => {
       {/* <Route path="/phaser" element={<PhaserGame />} /> */}
       <Route path="/board" element={<Board />} />
       <Route path="/chat" element={<Chat />} />
+      <Route path="/workspaces" element={<ChooseWorkspace />}></Route>
+      <Route path="/workspace/:space" element={<PhaserGame />}></Route>
     </Routes>
   );
 };

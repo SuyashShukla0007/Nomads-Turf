@@ -1,23 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
 import Phaser from "phaser";
-import GameScene from "../../scenes/GameScene";
+import Space1 from "../../scenes/space1";
+import Space2 from "../../scenes/space2";
 import { useNavigate } from "react-router-dom";
-
 const PhaserGame = () => {
   const gameRef = useRef(null);
   const navigate = useNavigate();
   const [open,setOpen]=useState(false)
+
+
   useEffect(() => {
+    //get space from url
+    const space=window.location.pathname.split("/")[2];
+   
+
     const config = {
       type: Phaser.AUTO,
-      width: 1280,
-      height: 640,
+      width: space=='space1'?960:1280,
+      height: space=='space1'?960:640,
       parent: "game-container",
       physics: {
         default: "arcade",
         arcade: { debug: false },
       },
-      scene: [GameScene],
+      scene: [space=='space1'?Space2:Space1],
     };
 
     if (!gameRef.current) {
