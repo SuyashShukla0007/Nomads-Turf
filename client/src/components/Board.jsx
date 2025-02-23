@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { FaUndo, FaRedo, FaTrash, FaPencilAlt, FaSave, FaPalette } from "react-icons/fa";
-import tileset from "../assets/tileset.png"; 
+import tileset from "../assets/space1/tileset.png"; 
 
 const CollaborativeBoard = () => {
   const canvasRef = useRef(null);
