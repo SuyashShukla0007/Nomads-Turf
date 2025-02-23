@@ -56,7 +56,7 @@ const CollaborativeBoard = () => {
     const canvas = canvasRef.current;
     const imageData = canvas.toDataURL();
     setHistory((prev) => [...prev, imageData]);
-    setRedoStack([]);
+    setRedoStack([]); // Reset redo stack when saving new state
     setCanvasImage(imageData);
   };
 
@@ -74,25 +74,29 @@ const CollaborativeBoard = () => {
 
   const handleUndo = () => {
     if (history.length === 0) return;
-    const prevState = history.pop();
-    setRedoStack((prev) => [...prev, canvasRef.current.toDataURL()]);
-    restoreCanvas(prevState);
+    const prevState = history[history.length - 1]; // Get the last state in history
+    const newHistory = history.slice(0, history.length - 1); // Create a new array excluding the last state
+    setHistory(newHistory);
+    setRedoStack((prev) => [...prev, canvasRef.current.toDataURL()]); // Save the current canvas state to redo stack
+    restoreCanvas(prevState); // Restore the previous state
   };
 
   const handleRedo = () => {
     if (redoStack.length === 0) return;
-    const nextState = redoStack.pop();
-    setHistory((prev) => [...prev, canvasRef.current.toDataURL()]);
-    restoreCanvas(nextState);
+    const nextState = redoStack[redoStack.length - 1]; // Get the last state in redo stack
+    const newRedoStack = redoStack.slice(0, redoStack.length - 1); // Create a new array excluding the last state
+    setRedoStack(newRedoStack);
+    setHistory((prev) => [...prev, canvasRef.current.toDataURL()]); // Save the current canvas state to history
+    restoreCanvas(nextState); // Restore the next state
   };
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
     context.clearRect(0, 0, canvas.width, canvas.height);
-    setHistory([]);
-    setRedoStack([]);
-    setCanvasImage(null);
+    setHistory([]); // Reset history
+    setRedoStack([]); // Reset redo stack
+    setCanvasImage(null); // Clear the canvas image
   };
 
   const saveDrawing = () => {
@@ -113,17 +117,14 @@ const CollaborativeBoard = () => {
       }}
     >
       <h1
-  className="text-4xl font-extrabold mb-4 tracking-wide"
-  style={{
-    fontFamily: "'Comic Sans MS', 'Comic Sans', cursive",
-    color: "#007BAC",
-  }}
->
-   The Idea Canvas
-</h1>
-
-
-
+        className="text-4xl font-extrabold mb-4 tracking-wide"
+        style={{
+          fontFamily: "'Comic Sans MS', 'Comic Sans', cursive",
+          color: "#007BAC",
+        }}
+      >
+        The Idea Canvas
+      </h1>
 
       <div className="flex items-center space-x-6 bg-gradient-to-r from-blue-300 to-blue-300 p-4 rounded-2xl shadow-xl mb-6 backdrop-blur-lg">
         <button
