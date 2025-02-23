@@ -1,8 +1,8 @@
-import tilemap from "../assets/map.json";
-import player from "../assets/player.png";
-import interior from "../assets/Interiors_free_32x32.png";
-import room from "../assets/Room_Builder_free_32x32.png";
-export default class GameScene extends Phaser.Scene {
+import tilemap from "../assets/space2/map.json";
+import player from "../assets/space2/player.png";
+import interior from "../assets/space2/Interiors_free_32x32.png";
+import room from "../assets/space2/Room_Builder_free_32x32.png";
+export default class Space1 extends Phaser.Scene {
   constructor() {
     super("GameScene");
     this.localPlayer = null;
@@ -56,8 +56,8 @@ export default class GameScene extends Phaser.Scene {
     this.localPlayer.setScale(1.5);
     this.physics.add.collider(this.localPlayer, this.collisionLayer);
 
-    this.cameras.main.startFollow(this.localPlayer, true, 0.08, 0.08); // Smooth follow
-    this.cameras.main.setZoom(1.5);
+    // this.cameras.main.startFollow(this.localPlayer, true, 0.08, 0.08); // Smooth follow
+    // this.cameras.main.setZoom(1.5);
 
     // this.collisionLayer.setCollisionBetween(772,775);
     // this.collisionLayer.setCollisionBetween(804,806);
