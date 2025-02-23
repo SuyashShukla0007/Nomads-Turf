@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Phaser from "phaser";
 import GameScene from "../../scenes/GameScene";
 import { useNavigate } from "react-router-dom";
@@ -6,12 +6,12 @@ import { useNavigate } from "react-router-dom";
 const PhaserGame = () => {
   const gameRef = useRef(null);
   const navigate = useNavigate();
-
+  const [open,setOpen]=useState(false)
   useEffect(() => {
     const config = {
       type: Phaser.AUTO,
-      width: 960,
-      height: 960,
+      width: 1280,
+      height: 640,
       parent: "game-container",
       physics: {
         default: "arcade",
@@ -33,10 +33,18 @@ const PhaserGame = () => {
   const goToPage = (page) => navigate(`/${page}`);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 to-black">
-      <div id="game-container" className="w-full h-full"></div>
 
-      <div className="fixed right-6 top-1/2 transform -translate-y-1/2 flex flex-col gap-6 bg-gradient-to-r from-blue-300/50 to-blue-400/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/20 z-50">
+
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 to-black">
+      <div id="game-container" className="w-full h-full">
+      <button onClick={()=>setOpen(!open)} className="bg-white text-black text-5x absolute right-0 top-0">Features</button>
+      </div>
+
+   
+
+
+      (
+        {open && <div className="fixed right-6 top-1/2 transform -translate-y-1/2 flex flex-col gap-6 bg-gradient-to-r from-blue-300/50 to-blue-400/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/20 z-50">
         <div className="relative w-[220px] h-[160px] rounded-xl overflow-hidden shadow-lg transition-transform hover:scale-105">
           <div className="absolute top-0 left-0 w-full bg-blue-900/70 text-white text-center py-2 font-semibold z-10">
             Collaborative Whiteboard
@@ -75,7 +83,7 @@ const PhaserGame = () => {
         >
           Logout
         </button>
-      </div>
+      </div>})
     </div>
   );
 };
