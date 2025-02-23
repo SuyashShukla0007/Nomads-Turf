@@ -138,12 +138,12 @@ this.localPlayer.setOffset(0, 8);
     });
 
     // Add a debug layer to visualize the collision tiles
-    const debugGraphics = this.add.graphics().setAlpha(0.75);
-    this.collisionLayer.renderDebug(debugGraphics, {
-      tileColor: null, // Make it transparent
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0), // Red for colliding tiles
-      faceColor: new Phaser.Display.Color(255, 0, 0), // Red face color for debug
-    });
+    // const debugGraphics = this.add.graphics().setAlpha(0.75);
+    // this.collisionLayer.renderDebug(debugGraphics, {
+    //   tileColor: null, // Make it transparent
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0), // Red for colliding tiles
+    //   faceColor: new Phaser.Display.Color(255, 0, 0), // Red face color for debug
+    // });
   }
 
   update() {
