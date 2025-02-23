@@ -1,4 +1,3 @@
-// src/components/AuthPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
@@ -16,10 +15,9 @@ const AuthPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate authentication (replace with real logic if needed)
     if (formData.email && formData.password) {
       console.log('User logged in:', formData);
-      navigate('/home'); // Navigate to Home Page
+      navigate('/home');
     } else {
       alert('Please fill in all fields');
     }
