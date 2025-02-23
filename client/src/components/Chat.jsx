@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import tileset from "../assets/tileset.png";
+import tileset from "../assets/space1/tileset.png";
 
 const ChatRoom = () => {
   const navigate = useNavigate();
