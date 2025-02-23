@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { FaUndo, FaRedo, FaTrash, FaPencilAlt, FaSave, FaPalette } from "react-icons/fa";
-import tileset from "../assets/tileset.png"; // Background image
+import tileset from "../assets/tileset.png"; 
 
 const CollaborativeBoard = () => {
   const canvasRef = useRef(null);
@@ -12,20 +12,18 @@ const CollaborativeBoard = () => {
   const [brushColor, setBrushColor] = useState("#000000");
   const [canvasImage, setCanvasImage] = useState(null);
 
-  // Initialize Canvas
   useEffect(() => {
     const canvas = canvasRef.current;
-    canvas.width = window.innerWidth * 0.85; // Larger canvas size
-    canvas.height = window.innerHeight * 0.7; // Adjust height
+    canvas.width = window.innerWidth * 0.85; 
+    canvas.height = window.innerHeight * 0.7; 
     canvas.style.cursor = "crosshair";
 
     const context = canvas.getContext("2d");
     context.lineCap = "round";
-    context.strokeStyle = brushColor; // Brush color
+    context.strokeStyle = brushColor; 
     context.lineWidth = brushSize;
     contextRef.current = context;
 
-    // Restore canvas after brush change
     if (canvasImage) {
       const img = new Image();
       img.src = canvasImage;
@@ -33,7 +31,6 @@ const CollaborativeBoard = () => {
     }
   }, [brushSize, brushColor, canvasImage]);
 
-  // Start Drawing
   const startDrawing = ({ nativeEvent }) => {
     const { offsetX, offsetY } = nativeEvent;
     contextRef.current.beginPath();
@@ -41,7 +38,6 @@ const CollaborativeBoard = () => {
     setIsDrawing(true);
   };
 
-  // Draw on Canvas
   const draw = ({ nativeEvent }) => {
     if (!isDrawing) return;
     const { offsetX, offsetY } = nativeEvent;
@@ -49,7 +45,6 @@ const CollaborativeBoard = () => {
     contextRef.current.stroke();
   };
 
-  // Stop Drawing
   const stopDrawing = () => {
     if (!isDrawing) return;
     contextRef.current.closePath();
@@ -57,7 +52,6 @@ const CollaborativeBoard = () => {
     saveState();
   };
 
-  // Save Canvas State
   const saveState = () => {
     const canvas = canvasRef.current;
     const imageData = canvas.toDataURL();
@@ -66,7 +60,6 @@ const CollaborativeBoard = () => {
     setCanvasImage(imageData);
   };
 
-  // Restore Canvas State
   const restoreCanvas = (imageData) => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
@@ -79,7 +72,6 @@ const CollaborativeBoard = () => {
     setCanvasImage(imageData);
   };
 
-  // Undo
   const handleUndo = () => {
     if (history.length === 0) return;
     const prevState = history.pop();
@@ -87,7 +79,6 @@ const CollaborativeBoard = () => {
     restoreCanvas(prevState);
   };
 
-  // Redo
   const handleRedo = () => {
     if (redoStack.length === 0) return;
     const nextState = redoStack.pop();
@@ -95,7 +86,6 @@ const CollaborativeBoard = () => {
     restoreCanvas(nextState);
   };
 
-  // Clear Canvas
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
@@ -105,7 +95,6 @@ const CollaborativeBoard = () => {
     setCanvasImage(null);
   };
 
-  // Save Drawing as Image
   const saveDrawing = () => {
     const canvas = canvasRef.current;
     const link = document.createElement("a");
@@ -123,7 +112,6 @@ const CollaborativeBoard = () => {
         backgroundPosition: "center",
       }}
     >
-      {/* Title */}
       <h1
   className="text-4xl font-extrabold mb-4 tracking-wide"
   style={{
@@ -137,7 +125,6 @@ const CollaborativeBoard = () => {
 
 
 
-      {/* Toolbar */}
       <div className="flex items-center space-x-6 bg-gradient-to-r from-blue-300 to-blue-300 p-4 rounded-2xl shadow-xl mb-6 backdrop-blur-lg">
         <button
           onClick={handleUndo}
@@ -187,7 +174,6 @@ const CollaborativeBoard = () => {
         </label>
       </div>
 
-      {/* Canvas */}
       <div className="rounded-lg overflow-hidden shadow-2xl">
         <canvas
           ref={canvasRef}
