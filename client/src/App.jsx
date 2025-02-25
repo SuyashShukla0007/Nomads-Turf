@@ -5,6 +5,7 @@ import AuthPage from "./components/AuthPage";
 import PhaserGame from "./components/Workspace/PhaserGame";
 import Board from "./components/Board";
 import Chat from "./components/Chat";
+import Guess from "./components/Workspace/popUps/Guess";
 
 import ChooseWorkspace from "./pages/ChooseWorkspace";
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
 
       {/* <Route path="/phaser" element={<PhaserGame />} /> */}
       <Route path="/board" element={<Board />} />
+      <Route path='/guess' element={<Guess/>}/>
       <Route path="/chat" element={<Chat />} />
       <Route path="/workspaces" element={<ChooseWorkspace />}></Route>
       <Route path="/workspace/:space" element={<PhaserGame />}></Route>
