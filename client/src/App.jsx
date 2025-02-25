@@ -8,6 +8,7 @@ import Chat from "./components/Chat";
 import Guess from "./components/Workspace/popUps/Guess";
 
 import ChooseWorkspace from "./pages/ChooseWorkspace";
+import TicTacToe from "./components/Workspace/popUps/TicTacToe";
 const App = () => {
   return (
     <Routes>
@@ -16,6 +17,7 @@ const App = () => {
 
       {/* <Route path="/phaser" element={<PhaserGame />} /> */}
       <Route path="/board" element={<Board />} />
+      <Route path='/tic-tac-toe' element={<TicTacToe/>}/>
       <Route path='/guess' element={<Guess/>}/>
       <Route path="/chat" element={<Chat />} />
       <Route path="/workspaces" element={<ChooseWorkspace />}></Route>
