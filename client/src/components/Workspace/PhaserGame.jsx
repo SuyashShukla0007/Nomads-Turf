@@ -36,6 +36,15 @@ const PhaserGame = () => {
     };
   }, []);
 
+    useEffect(()=>{
+      const check =window.location.pathname.split("/")[2];
+      if(check=='space1')
+      {
+        setOpen(true)
+      }
+    },[])
+
+
   const goToPage = (page) => navigate(`/${page}`);
 
   return (
@@ -43,7 +52,7 @@ const PhaserGame = () => {
 
     <div className="relative min-h-screen bg-gradient-to-br from-gray-900 to-black">
       <div id="game-container" className="w-full h-full">
-      <button onClick={()=>setOpen(!open)} className="bg-white text-black text-5x absolute right-0 top-0">Features</button>
+      <button onClick={()=>setOpen(!open)} className="bg-white text-black px-10 text-2xl rounded-xl mt-5 mr-5 absolute right-0 top-0">Features</button>
       </div>
 
    
