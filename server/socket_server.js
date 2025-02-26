@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/dbConnect.js';
 import Player from './models/playerModel.js';
-
+import Document from './models/DocumentModel.js';
 
 
 dotenv.config();
@@ -46,6 +46,19 @@ io.on('connection', (socket) => {
             console.error('Error adding player:', error);
         }
     });
+
+    socket.on("join-doc", async (docId) => {
+        socket.join(docId);
+        const doc = await Document.findById(docId);
+        if (doc) {
+          socket.emit("load-doc", doc.content);
+        }
+      });
+    
+      socket.on("edit-doc", async ({ docId, content }) => {
+        await Document.findByIdAndUpdate(docId, { content });
+        socket.to(docId).emit("update-doc", content);
+      });
 
     socket.on('movement', async (data) => {
         const { x, y, room } = data;

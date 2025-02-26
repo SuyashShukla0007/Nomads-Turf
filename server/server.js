@@ -24,3 +24,6 @@ app.use("/user", userRoutes);
 
 import roomRoutes from "./routes/roomRoutes.js";
 app.use("/room", roomRoutes);
+
+import documentRoutes from "./routes/documentRoutes.js";
+app.use("/document", documentRoutes);
