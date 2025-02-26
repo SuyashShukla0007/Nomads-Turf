@@ -1,5 +1,4 @@
 /* selected 2 */
-/* Aurora Background Animation */
 .aurora-bg {
   position: absolute;
   width: 100%;
@@ -24,7 +23,6 @@
   }
 }
 
-/* Floating Shapes (Animated Blobs) */
 .floating-shapes {
   position: absolute;
   width: 100%;
@@ -70,7 +68,6 @@
   }
 }
 
-/* Subtle Grid Overlay */
 .grid-overlay {
   position: absolute;
   inset: 0;
@@ -84,7 +81,6 @@
   z-index: -1;
 }
 
-/* Reveal Animation (for Cards) */
 .reveal-card {
   opacity: 0;
   transform: translateY(80px);
@@ -96,7 +92,6 @@
   transform: translateY(0);
 }
 
-/* Glassmorphism Effect */
 .glass-card {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
@@ -105,7 +100,6 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* Hover Glow Effect */
 button:hover {
   box-shadow: 0 0 25px rgba(255, 184, 108, 0.8);
 }
@@ -126,7 +120,6 @@ button:hover {
   }
 }
 
-/* Fade-In Animation */
 .animate-fade-in {
   animation: fadeIn 2s ease forwards;
 }
@@ -142,7 +135,6 @@ button:hover {
   }
 }
 
-/* Card Hover Interaction */
 .glass-card:hover {
   transform: scale(1.03);
   box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);

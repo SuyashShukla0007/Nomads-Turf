@@ -55,7 +55,6 @@ const HomePage = () => {
       <div className="floating-shapes absolute inset-0 z-0"></div>
       <div className="grid-overlay absolute inset-0 z-0"></div>
 
-   {/* Header */}
 <header className="p-6 flex justify-between items-center sticky top-0 backdrop-blur-lg z-50 bg-black/30 shadow-xl">
   <h1 className="text-6xl font-extrabold tracking-wide text-transparent bg-gradient-to-r from-[#ffffff] to-[#D7CCC8] bg-clip-text animate-slide-in-left">
     Nomad's Turf
@@ -70,7 +69,6 @@ const HomePage = () => {
 </header>
 
 
-      {/* Hero Section */}
       <section className="text-center mt-32 px-4 relative z-10 animate-fade-in">
         <h2 className="text-7xl font-bold mb-8 text-white drop-shadow-2xl">
           Your Virtual Workspace Awaits
@@ -80,7 +78,6 @@ const HomePage = () => {
         </p>
       </section>
 
-      {/* Feature Cards */}
       <div className="mt-32 space-y-24 px-8">
         {sections.map((section, index) => (
           <div
@@ -89,12 +86,10 @@ const HomePage = () => {
               index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
             }`}
           >
-            {/* Image Preview */}
             <div className="w-1/2 hover:scale-105 transition-transform duration-700">
               <img src={section.img} alt={section.title} className="rounded-lg shadow-lg" />
             </div>
 
-            {/* Text Content */}
             <div className="w-1/2 px-8">
               <h3 className="text-5xl font-semibold mb-6 drop-shadow-lg">{section.title}</h3>
               <p className="text-lg leading-relaxed bg-black/50 p-4 rounded-lg shadow-lg">
