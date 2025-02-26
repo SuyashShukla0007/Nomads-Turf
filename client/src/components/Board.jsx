@@ -13,34 +13,49 @@ const CollaborativeBoard = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
     canvas.width = window.innerWidth * 0.85;
     canvas.height = window.innerHeight * 0.7;
     canvas.style.cursor = "crosshair";
-
-    const context = canvas.getContext("2d");
     context.lineCap = "round";
-    context.strokeStyle = brushColor;
-    context.lineWidth = brushSize;
     contextRef.current = context;
-
     saveState();
+  }, []);
+
+  useEffect(() => {
+    contextRef.current.strokeStyle = brushColor;
+    contextRef.current.lineWidth = brushSize;
   }, [brushSize, brushColor]);
 
   const saveState = () => {
-    const canvas = canvasRef.current;
-    setHistory((prev) => [...prev, canvas.toDataURL()]);
+    const imageData = canvasRef.current.toDataURL();
+    setHistory((prev) => [...prev, imageData]);
     setRedoStack([]);
   };
 
   const restoreCanvas = (imageData) => {
-    const canvas = canvasRef.current;
-    const context = contextRef.current;
     const image = new Image();
     image.src = imageData;
     image.onload = () => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(image, 0, 0);
+      contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      contextRef.current.drawImage(image, 0, 0);
     };
+  };
+
+  const handleUndo = () => {
+    if (history.length <= 1) return;
+    const prevState = history[history.length - 2];
+    setRedoStack((prev) => [history[history.length - 1], ...prev]);
+    setHistory((prev) => prev.slice(0, -1));
+    restoreCanvas(prevState);
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+    const nextState = redoStack[0];
+    setHistory((prev) => [...prev, nextState]);
+    setRedoStack((prev) => prev.slice(1));
+    restoreCanvas(nextState);
   };
 
   const startDrawing = ({ nativeEvent }) => {
@@ -64,36 +79,15 @@ const CollaborativeBoard = () => {
     saveState();
   };
 
-  const handleUndo = () => {
-    if (history.length <= 1) return;
-    setRedoStack((prev) => [...prev, history[history.length - 1]]);
-    const newHistory = history.slice(0, -1);
-    setHistory(newHistory);
-    restoreCanvas(newHistory[newHistory.length - 1]);
-  };
-
-  const handleRedo = () => {
-    if (redoStack.length === 0) return;
-    const nextState = redoStack[redoStack.length - 1];
-    setRedoStack((prev) => prev.slice(0, -1));
-    setHistory((prev) => [...prev, nextState]);
-    restoreCanvas(nextState);
-  };
-
   const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    const context = contextRef.current;
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    setHistory([]);
-    setRedoStack([]);
+    contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     saveState();
   };
 
   const saveDrawing = () => {
-    const canvas = canvasRef.current;
     const link = document.createElement("a");
     link.download = "drawing.png";
-    link.href = canvas.toDataURL("image/png");
+    link.href = canvasRef.current.toDataURL("image/png");
     link.click();
   };
 
