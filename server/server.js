@@ -21,3 +21,6 @@ app.get("/", (req, res) => {
 
 import userRoutes from "./routes/userRoutes.js";
 app.use("/user", userRoutes);
+
+import roomRoutes from "./routes/roomRoutes.js";
+app.use("/room", roomRoutes);
