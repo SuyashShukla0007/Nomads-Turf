@@ -28,3 +28,14 @@ export const loginUser= async(req,res)=>{
         res.status(200).json(user);   // implement jwt token at later stage
     }
 }
+
+export const getUserById= async(req,res)=>{
+    const {id}=req.body;
+    const user=await User.findById(id);
+    if(!user){
+        res.status(404).json({message:"User not found"});
+    }
+    else{
+        res.status(200).json(user);
+    }
+}
