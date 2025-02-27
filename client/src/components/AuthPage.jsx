@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import { AiFillFacebook } from 'react-icons/ai';
+import axios from "axios"; 
+import {GoogleOAuthProvider,GoogleLogin} from "@react-oauth/google";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,10 +24,35 @@ const AuthPage = () => {
     }
   };
 
-  const handleGoogleLogin = () => alert('Should add Google OAuth');
-  const handleFacebookLogin = () => alert('Should add Facebook OAuth');
+  const handleGoogleLogin = async (response) => {
+    try {
+      const googleToken = response.credential;
+      const res = await axios.get("http://localhost:3000/auth/google/callback", {
+        params: { token: googleToken },
+      });
+
+      const { message, name, token } = res.data;
+      
+      localStorage.setItem("token", token);
+      localStorage.setItem("loggedInUser", name);
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      
+      alert("Success");
+      setTimeout(() => {
+        navigate("/workspaces");
+      }, 1000);
+    } catch (error) {
+      alert("Google login failed: " + error.message);
+  }
+};
+
+  const handleFacebookLogin = () => {
+    alert('Should add Facebook OAuth');
+  };
 
   return (
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center p-6"
       style={{ backgroundImage: "url('/src/assets/VIRTUALBG.jpg')" }}
@@ -35,18 +62,39 @@ const AuthPage = () => {
           {isLogin ? 'Welcome Back!' : 'Create Your Account'}
         </h2>
         <div className="flex justify-center gap-4 mb-6">
-          <button
+          {/* <button
             onClick={handleFacebookLogin}
             className="flex items-center gap-2 px-5 py-3 bg-[#948268] text-white rounded-full shadow-lg hover:bg-[#696137] transition-all"
           >
             <AiFillFacebook className="text-2xl" /> Facebook
-          </button>
-          <button
+          </button> */}
+          <div className="mt-6 flex justify-center">
+          <GoogleLogin
+  onSuccess={handleGoogleLogin}
+  onError={(error) => console.log("Google login error", error)}
+  theme="filled_blue"
+  shape="pill"
+  size="large"
+  text="signin_with"
+  logo_alignment="left"
+  render={(renderProps) => (
+    <button
+      onClick={renderProps.onClick}
+      disabled={renderProps.disabled}
+      className="flex items-center gap-2 px-5 py-3 bg-[#525656] text-white rounded-full shadow-lg hover:bg-[#696137] transition-all disabled:opacity-50"
+    >
+      <FcGoogle className="text-2xl" /> Google
+    </button>
+  )}
+/>
+
+      </div>
+          {/* <button
             onClick={handleGoogleLogin}
             className="flex items-center gap-2 px-5 py-3 bg-[#525656] text-white rounded-full shadow-lg hover:bg-[#696137] transition-all"
           >
             <FcGoogle className="text-2xl" /> Google
-          </button>
+          </button> */}
         </div>
         <form onSubmit={handleSubmit} className="space-y-5">
           <input
@@ -85,7 +133,9 @@ const AuthPage = () => {
           </span>
         </p>
       </div>
+     
     </div>
+    </GoogleOAuthProvider>
   );
 };
 
