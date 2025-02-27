@@ -3,8 +3,6 @@
 @tailwind utilities;
 body {
   margin: 0;
-  overflow: hidden;
-  background-color: black;
 }
 
 #game-container {
