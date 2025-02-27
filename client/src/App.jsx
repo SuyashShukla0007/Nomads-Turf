@@ -1,6 +1,4 @@
 import React from "react"
-import { Routes, Route } from "react-router-dom"
-import AuthPage from "./components/AuthPage"
 import Lobby from "./pages/Lobby"
 import RoomPage from "./pages/Room"
 import PhaserGame from "./components/Workspace/PhaserGame"
@@ -10,16 +8,9 @@ import Guess from "./components/Workspace/popUps/Guess"
 
 import ChooseWorkspace from "./pages/ChooseWorkspace"
 import TicTacToe from "./components/Workspace/popUps/TicTacToe"
-import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AuthPage from "./components/AuthPage";
 import HomePage from "./components/HomePage";
-import PhaserGame from "./components/Workspace/PhaserGame";
-import Board from "./components/Board";
-import Chat from "./components/Chat";
-import ChooseWorkspace from "./pages/ChooseWorkspace";
-import TicTacToe from "./components/Workspace/popUps/TicTacToe";
-import Guess from "./components/Workspace/popUps/Guess";
 import GamesPage from "./components/GamesPage";
 
 import AfterAuth from "./pages/AfterAuth";

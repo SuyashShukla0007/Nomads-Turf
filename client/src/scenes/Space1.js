@@ -41,35 +41,6 @@ export default class Space1 extends Phaser.Scene {
     // Set collision properties for the collision layer
     this.collisionLayer.setCollisionByProperty({ collides: true });
 
-    // Setup collision array
-    const collisionArray = [
-      1465, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
-      1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
-      1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
-      1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1226,
-      1227, 1224, 1225, 1430, 1431, 1242, 1243, 741, 52, 52, 52, 52, 52, 52,
-      52, 52, 741, 1240, 1241, 1430, 1431, 1258, 1259, 757, 49, 68, 50, 68,
-      50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 51, 757, 1256,
-      1257, 1430, 1431, 1430, 1431, 1430, 1431, 1430, 1465, 1488, 1488, 1488,
-      1488, 1488, 1488, 1488, 1488, 1488, 1464, 1465, 1488, 1488, 1488, 1488,
-      1488, 1488, 1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430,
-      1431, 1430, 1431, 1430, 1431, 536870961, 2684354609, 1430, 1431, 1610612788,
-      1610612804, 2684354628, 2684354612, 1430, 1431, 536870963, 2684354611,
-      1430, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1430, 3221226936,
-      1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
-      1073743312, 1073743312, 1073743312, 3221226937, 1073743312, 1073743312,
-      1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
-      1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
-      1073743312, 1073743312, 1073743312, 1073743312, 3221226936, 1073743312,
-      1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
-      1073743312, 1073743312, 3221226937,
-    ];
-
-    // Set collision for the specified tiles
-    collisionArray.forEach((tile) => {
-      this.collisionLayer.setCollision(tile);
-    });
-
     // Setup animations
     this.anims.create({
       key: "sideway",
@@ -115,15 +86,19 @@ export default class Space1 extends Phaser.Scene {
     });
 
     // Handle player movement
-    this.socket.on("move", (playerInfo) => {
+    this.socket.on("movementUpdate", (playerInfo) => {
       this.updateOtherPlayerPosition(playerInfo.socketId, playerInfo.x, playerInfo.y);
     });
 
     // Handle player disconnection
-    this.socket.on("playerLeft", (playerInfo) => {
-      this.removeOtherPlayer(playerInfo.socketId);
+    this.socket.on("playerDisconnected", (socketId) => {
+      this.removeOtherPlayer(socketId);
     });
   }
+
+
+  
+
 
   createLocalPlayer(playerInfo) {
     this.localPlayer = this.physics.add.sprite(playerInfo.x, playerInfo.y, "player");
@@ -148,24 +123,31 @@ export default class Space1 extends Phaser.Scene {
     const otherPlayer = this.otherPlayers[socketId];
     if (!otherPlayer) return;
 
-    // Calculate movement direction
+    // Interpolate position for smooth movement
+    const speed = 5; // Adjust speed as necessary
     const dx = x - otherPlayer.x;
     const dy = y - otherPlayer.y;
 
-    // Update position
-    otherPlayer.setPosition(x, y);
+    // Calculate distance
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    // If the distance is greater than a threshold, move towards the new position
+    if (distance > 1) {
+      otherPlayer.x += (dx / distance) * speed;
+      otherPlayer.y += (dy / distance) * speed;
 
-    // Update animation based on movement direction
-    if (Math.abs(dx) > Math.abs(dy)) {
-      // Moving horizontally
-      otherPlayer.anims.play("sideway", true);
-      otherPlayer.flipX = dx < 0; // Flip sprite based on direction
-    } else if (dy < 0) {
-      // Moving up
-      otherPlayer.anims.play("up", true);
-    } else if (dy > 0) {
-      // Moving down
-      otherPlayer.anims.play("down", true);
+      // Update animation based on movement direction
+      if (Math.abs(dx) > Math.abs(dy)) {
+        // Moving horizontally
+        otherPlayer.anims.play("sideway", true);
+        otherPlayer.flipX = dx < 0; // Flip sprite based on direction
+      } else if (dy < 0) {
+        // Moving up
+        otherPlayer.anims.play("up", true);
+      } else if (dy > 0) {
+        // Moving down
+        otherPlayer.anims.play("down", true);
+      }
     } else {
       // Not moving
       otherPlayer.anims.stop();
