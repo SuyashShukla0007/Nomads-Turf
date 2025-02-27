@@ -29,11 +29,11 @@ import App from "./App"
 import "./index.css"
 import SocketProvider from "./context/SocketProvider"
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <BrowserRouter>
       <SocketProvider>
         <App />
       </SocketProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  // </React.StrictMode>
 )

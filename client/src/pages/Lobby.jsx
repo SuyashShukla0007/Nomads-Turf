@@ -33,7 +33,7 @@ const Lobby = () => {
   }, [socket, handleJoinRoom])
 
   return (
-    <div>
+    <div className="bg-white">
       <h1>Lobby</h1>
       <form onSubmit={handleSubmitForm}>
         <label htmlFor="email">Email ID</label>

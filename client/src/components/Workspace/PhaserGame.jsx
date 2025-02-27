@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Phaser from "phaser";
+// import { io } from "socket.io-client";
 import Space1 from "../../scenes/space1";
 import Space2 from "../../scenes/space2";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,8 @@ const PhaserGame = () => {
 
   useEffect(() => {
     //get space from url
+
+
     const space=window.location.pathname.split("/")[2];
    
 
@@ -54,9 +57,6 @@ const PhaserGame = () => {
       <div id="game-container" className="w-full h-full">
       <button onClick={()=>setOpen(!open)} className="bg-white text-black px-10 text-2xl rounded-xl mt-5 mr-5 absolute right-0 top-0">Features</button>
       </div>
-
-   
-
 
       (
         {open && <div className="fixed right-6 top-1/2 transform -translate-y-1/2 flex flex-col gap-6 bg-gradient-to-r from-blue-300/50 to-blue-400/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/20 z-50">

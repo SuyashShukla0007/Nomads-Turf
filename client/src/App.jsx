@@ -1,6 +1,4 @@
 import React from "react"
-import { Routes, Route } from "react-router-dom"
-import AuthPage from "./components/AuthPage"
 import Lobby from "./pages/Lobby"
 import RoomPage from "./pages/Room"
 import PhaserGame from "./components/Workspace/PhaserGame"
@@ -10,18 +8,12 @@ import Guess from "./components/Workspace/popUps/Guess"
 
 import ChooseWorkspace from "./pages/ChooseWorkspace"
 import TicTacToe from "./components/Workspace/popUps/TicTacToe"
-import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AuthPage from "./components/AuthPage";
 import HomePage from "./components/HomePage";
-import PhaserGame from "./components/Workspace/PhaserGame";
-import Board from "./components/Board";
-import Chat from "./components/Chat";
-import ChooseWorkspace from "./pages/ChooseWorkspace";
-import TicTacToe from "./components/Workspace/popUps/TicTacToe";
-import Guess from "./components/Workspace/popUps/Guess";
 import GamesPage from "./components/GamesPage";
 
+import AfterAuth from "./pages/AfterAuth";
 const App = () => {
   return (
     <Routes>
@@ -29,7 +21,7 @@ const App = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/home" element={<PhaserGame />} />
       <Route path="/call" element={<Lobby />} />
-      <Route path="/call/room/:roomId" element={<RoomPage />} />
+      <Route path="/call/room/:roomId" element={<RoomPage />} /><Route path="/after-auth" element={<AfterAuth/>}></Route>
       {/* <Route path="/phaser" element={<PhaserGame />} /> */}
 
       <Route path="/workspace/:space" element={<PhaserGame />} />
