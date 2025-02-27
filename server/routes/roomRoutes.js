@@ -1,9 +1,13 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
 
-import { createRoom,getRoomById , joinRoom , getAllRooms} from '../controller/roomController.js';
-import room from '../models/roomModel.js';
-
+import {
+  createRoom,
+  getRoomById,
+  joinRoom,
+  getAllRooms,
+} from "../controller/roomController.js";
+import room from "../models/roomModel.js";
 
 /*
                                             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -12,9 +16,9 @@ import room from '../models/roomModel.js';
 
 */
 
-router.post('/create', createRoom);//{name,users,createdBy}
-router.get('/:id', getRoomById);
-router.post('/join', joinRoom); // {roomId,userId}
-router.get('/all', getAllRooms);
+router.post("/create", createRoom); //{name,users,createdBy}
+router.get("/:id", getRoomById);
+router.post("/join", joinRoom); // {roomId,userId}
+router.get("/all", getAllRooms);
 
 export default router;

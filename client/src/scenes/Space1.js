@@ -1,11 +1,16 @@
+import Phaser from 'phaser';
+import { io } from 'socket.io-client';
 import tilemap from "../assets/space2/map.json";
 import player from "../assets/space2/player.png";
 import interior from "../assets/space2/Interiors_free_32x32.png";
 import room from "../assets/space2/Room_Builder_free_32x32.png";
+
 export default class Space1 extends Phaser.Scene {
   constructor() {
     super("GameScene");
     this.localPlayer = null;
+    this.otherPlayers = {};
+    this.socket = null;
   }
 
   preload() {
@@ -21,129 +26,158 @@ export default class Space1 extends Phaser.Scene {
   }
 
   create() {
-    // Load tilemap
+    // Setup socket connection
+    this.socket = io("http://localhost:5002");
+
+    // Setup map
     const map = this.make.tilemap({ key: "map" });
-
-    // Add tileset to the map
-    const interiorImage = map.addTilesetImage(
-      "Interiors_free_32x32",
-      "interior"
-    );
+    const interiorImage = map.addTilesetImage("Interiors_free_32x32", "interior");
     const RoomImage = map.addTilesetImage("Room_Builder_free_32x32", "room");
-    //scale the player
 
-    // Create layers
-
-    this.groundLayer = map.createLayer(
-      "floor",
-      [RoomImage, interiorImage],
-      0,
-      0
-    );
+    this.groundLayer = map.createLayer("floor", [RoomImage, interiorImage], 0, 0);
     this.floor = map.createLayer("normal", [RoomImage, interiorImage], 0, 0);
-    this.collisionLayer = map.createLayer(
-      "collision",
-      [RoomImage, interiorImage],
-      0,
-      0
-    );
-    // this.collisionLayer.renderDebug(this.add.graphics());
-    // Set collision for the collisionLayer based on property "collides: true"
+    this.collisionLayer = map.createLayer("collision", [RoomImage, interiorImage], 0, 0);
+    
+    // Set collision properties for the collision layer
     this.collisionLayer.setCollisionByProperty({ collides: true });
 
-    // Create player sprite with physics
-    this.localPlayer = this.physics.add.sprite(100, 800, "player");
-    this.localPlayer.setScale(1.5);
-    this.physics.add.collider(this.localPlayer, this.collisionLayer);
-
-    // this.cameras.main.startFollow(this.localPlayer, true, 0.08, 0.08); // Smooth follow
-    // this.cameras.main.setZoom(1.5);
-
-    // this.collisionLayer.setCollisionBetween(772,775);
-    // this.collisionLayer.setCollisionBetween(804,806);
-    // this.collisionLayer.setCollisionBetween(448,600);
-    // this.collisionLayer.setCollisionBetween(640,800);
-    // this.collisionLayer.setCollisionBetween(470,480);
-
-    const array = [
-      [
-        1465, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
-        1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
-        1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
-        1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1226,
-        1227, 1224, 1225, 1430, 1431, 1242, 1243, 741, 52, 52, 52, 52, 52, 52,
-        52, 52, 741, 1240, 1241, 1430, 1431, 1258, 1259, 757, 49, 68, 50, 68,
-        50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 51, 757, 1256, 1257,
-        1430, 1431, 1430, 1431, 1430, 1431, 1430, 1465, 1488, 1488, 1488, 1488,
-        1488, 1488, 1488, 1488, 1488, 1464, 1465, 1488, 1488, 1488, 1488, 1488,
-        1488, 1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430, 1431,
-        1430, 1431, 1430, 1431, 536870961, 2684354609, 1430, 1431, 1610612788,
-        1610612804, 2684354628, 2684354612, 1430, 1431, 536870963, 2684354611,
-        1430, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1430, 3221226936,
-        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
-        1073743312, 1073743312, 1073743312, 3221226937, 1073743312, 1073743312,
-        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
-        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
-        1073743312, 1073743312, 1073743312, 1073743312, 3221226936, 1073743312,
-        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
-        1073743312, 1073743312, 3221226937,
-      ],
+    // Setup collision array
+    const collisionArray = [
+      1465, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
+      1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
+      1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
+      1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1226,
+      1227, 1224, 1225, 1430, 1431, 1242, 1243, 741, 52, 52, 52, 52, 52, 52,
+      52, 52, 741, 1240, 1241, 1430, 1431, 1258, 1259, 757, 49, 68, 50, 68,
+      50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 51, 757, 1256,
+      1257, 1430, 1431, 1430, 1431, 1430, 1431, 1430, 1465, 1488, 1488, 1488,
+      1488, 1488, 1488, 1488, 1488, 1488, 1464, 1465, 1488, 1488, 1488, 1488,
+      1488, 1488, 1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430,
+      1431, 1430, 1431, 1430, 1431, 536870961, 2684354609, 1430, 1431, 1610612788,
+      1610612804, 2684354628, 2684354612, 1430, 1431, 536870963, 2684354611,
+      1430, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1430, 3221226936,
+      1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+      1073743312, 1073743312, 1073743312, 3221226937, 1073743312, 1073743312,
+      1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+      1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+      1073743312, 1073743312, 1073743312, 1073743312, 3221226936, 1073743312,
+      1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+      1073743312, 1073743312, 3221226937,
     ];
 
-    this.localPlayer.setSize(16, 24); // Reduce height to fit better
-this.localPlayer.setOffset(0, 8);
-
-    array.forEach((element) => {
-      this.collisionLayer.setCollision(element);
+    // Set collision for the specified tiles
+    collisionArray.forEach((tile) => {
+      this.collisionLayer.setCollision(tile);
     });
 
-    // Add collision detection between player and collision layer
-    // this.physics.add.collider(this.localPlayer, this.collisionLayer);
-
-    // Set player bounds to prevent moving out of the world
-    this.localPlayer.setCollideWorldBounds(true);
-
-    // Create cursor keys for movement
-    this.cursors = this.input.keyboard.createCursorKeys();
-
-    //animation for sideways movement
-
+    // Setup animations
     this.anims.create({
       key: "sideway",
-      frames: this.anims.generateFrameNumbers("player", {
-        frames: [1, 2, 3, 4, 5],
-      }),
+      frames: this.anims.generateFrameNumbers("player", { frames: [1, 2, 3, 4, 5] }),
       frameRate: 10,
-      // repeat:-1
     });
-
-    //animation for up movement
 
     this.anims.create({
       key: "down",
-      frames: this.anims.generateFrameNumbers("player", {
-        frames: [19, 20, 21, 22, 23],
-      }),
+      frames: this.anims.generateFrameNumbers("player", { frames: [19, 20, 21, 22, 23] }),
       frameRate: 10,
-      // repeat:-1
     });
 
     this.anims.create({
       key: "up",
-      frames: this.anims.generateFrameNumbers("player", {
-        frames: [6, 7, 8, 9, 10],
-      }),
+      frames: this.anims.generateFrameNumbers("player", { frames: [6, 7, 8, 9, 10] }),
       frameRate: 10,
-      // repeat:-1
     });
 
-    // Add a debug layer to visualize the collision tiles
-    // const debugGraphics = this.add.graphics().setAlpha(0.75);
-    // this.collisionLayer.renderDebug(debugGraphics, {
-    //   tileColor: null, // Make it transparent
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0), // Red for colliding tiles
-    //   faceColor: new Phaser.Display.Color(255, 0, 0), // Red face color for debug
-    // });
+    // Setup input
+    this.cursors = this.input.keyboard.createCursorKeys();
+
+    // Socket event handlers
+    this.socket.on("connect", () => {
+      console.log("Connected to server with ID:", this.socket.id);
+      this.socket.emit("join", { x: 100, y: 100, room: "space1" });
+    });
+
+    // Handle current players
+    this.socket.on("currentPlayers", (players) => {
+      players.forEach((playerInfo) => {
+        if (playerInfo.socketId === this.socket.id) {
+          this.createLocalPlayer(playerInfo);
+        } else {
+          this.createOtherPlayer(playerInfo);
+        }
+      });
+    });
+
+    // Handle new player joining
+    this.socket.on("newPlayer", (playerInfo) => {
+      this.createOtherPlayer(playerInfo);
+    });
+
+    // Handle player movement
+    this.socket.on("move", (playerInfo) => {
+      this.updateOtherPlayerPosition(playerInfo.socketId, playerInfo.x, playerInfo.y);
+    });
+
+    // Handle player disconnection
+    this.socket.on("playerLeft", (playerInfo) => {
+      this.removeOtherPlayer(playerInfo.socketId);
+    });
+  }
+
+  createLocalPlayer(playerInfo) {
+    this.localPlayer = this.physics.add.sprite(playerInfo.x, playerInfo.y, "player");
+    this.localPlayer.setScale(1.5);
+    this.localPlayer.setSize(16, 24);
+    this.localPlayer.setOffset(0, 8);
+    this.localPlayer.setCollideWorldBounds(true);
+    this.physics.add.collider(this.localPlayer, this.collisionLayer);
+  }
+
+  createOtherPlayer(playerInfo) {
+    const otherPlayer = this.physics.add.sprite(playerInfo.x, playerInfo.y, "player");
+    otherPlayer.setScale(1.5);
+    otherPlayer.setSize(16, 24);
+    otherPlayer.setOffset(0, 8);
+    this.physics.add.collider(otherPlayer, this.collisionLayer);
+    otherPlayer.anims.play("down", true); // Default animation for other players
+    this.otherPlayers[playerInfo.socketId] = otherPlayer;
+  }
+
+  updateOtherPlayerPosition(socketId, x, y) {
+    const otherPlayer = this.otherPlayers[socketId];
+    if (!otherPlayer) return;
+
+    // Calculate movement direction
+    const dx = x - otherPlayer.x;
+    const dy = y - otherPlayer.y;
+
+    // Update position
+    otherPlayer.setPosition(x, y);
+
+    // Update animation based on movement direction
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // Moving horizontally
+      otherPlayer.anims.play("sideway", true);
+      otherPlayer.flipX = dx < 0; // Flip sprite based on direction
+    } else if (dy < 0) {
+      // Moving up
+      otherPlayer.anims.play("up", true);
+    } else if (dy > 0) {
+      // Moving down
+      otherPlayer.anims.play("down", true);
+    } else {
+      // Not moving
+      otherPlayer.anims.stop();
+    }
+  }
+
+  removeOtherPlayer(socketId) {
+    const otherPlayer = this.otherPlayers[socketId];
+    if (otherPlayer) {
+      otherPlayer.destroy();
+      delete this.otherPlayers[socketId];
+    }
   }
 
   update() {
@@ -152,27 +186,45 @@ this.localPlayer.setOffset(0, 8);
     const speed = 150;
     let velocityX = 0;
     let velocityY = 0;
+    let moved = false;
 
-    // Handle movement using cursor keys
     if (this.cursors.left.isDown) {
       velocityX = -speed;
       this.localPlayer.anims.play("sideway", true);
       this.localPlayer.flipX = true;
+      moved = true;
     } else if (this.cursors.right.isDown) {
       velocityX = speed;
       this.localPlayer.anims.play("sideway", true);
       this.localPlayer.flipX = false;
-    } else if (this.cursors.up.isDown) {
+      moved = true;
+    }
+
+    if (this.cursors.up.isDown) {
       velocityY = -speed;
       this.localPlayer.anims.play("up", true);
+      moved = true;
     } else if (this.cursors.down.isDown) {
       velocityY = speed;
       this.localPlayer.anims.play("down", true);
-    } else {
+      moved = true;
+    }
+
+    if (!moved) {
       this.localPlayer.anims.stop();
     }
 
-    // Update player velocity for movement
     this.localPlayer.setVelocity(velocityX, velocityY);
+
+    // Check for collision with the collision layer
+    this.physics.collide(this.localPlayer, this.collisionLayer);
+
+    if (moved) {
+      this.socket.emit("movement", {
+        x: this.localPlayer.x,
+        y: this.localPlayer.y,
+        room: "space1" // Ensure you send the room information
+      });
+    }
   }
 }

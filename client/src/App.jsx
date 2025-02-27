@@ -9,12 +9,13 @@ import Guess from "./components/Workspace/popUps/Guess";
 
 import ChooseWorkspace from "./pages/ChooseWorkspace";
 import TicTacToe from "./components/Workspace/popUps/TicTacToe";
+import AfterAuth from "./pages/AfterAuth";
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<AuthPage />} />
       <Route path="/home" element={<PhaserGame />} />
-
+<Route path="/after-auth" element={<AfterAuth/>}></Route>
       {/* <Route path="/phaser" element={<PhaserGame />} /> */}
       <Route path="/board" element={<Board />} />
       <Route path='/tic-tac-toe' element={<TicTacToe/>}/>
