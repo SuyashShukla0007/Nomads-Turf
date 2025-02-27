@@ -1,0 +1,141 @@
+/* selected 2 */
+.aurora-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, #6a0dad, #1e0032, #12001a);
+  animation: auroraFlow 10s ease-in-out infinite alternate;
+  z-index: -1;
+}
+
+@keyframes auroraFlow {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(15deg);
+    filter: hue-rotate(60deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+}
+
+.floating-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.floating-shapes::before,
+.floating-shapes::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255, 69, 108, 0.6), rgba(255, 184, 108, 0.5));
+  animation: floatAnimation 8s infinite alternate ease-in-out;
+}
+
+.floating-shapes::before {
+  width: 300px;
+  height: 300px;
+  top: 20%;
+  left: 10%;
+  animation-duration: 10s;
+}
+
+.floating-shapes::after {
+  width: 250px;
+  height: 250px;
+  bottom: 10%;
+  right: 15%;
+  animation-duration: 12s;
+}
+
+@keyframes floatAnimation {
+  0% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-50px) translateX(30px) rotate(45deg);
+  }
+  100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+}
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.reveal-card {
+  opacity: 0;
+  transform: translateY(80px);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.reveal-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+button:hover {
+  box-shadow: 0 0 25px rgba(255, 184, 108, 0.8);
+}
+
+/* Slide-In Animation for Title */
+.animate-slide-in-left {
+  animation: slideInLeft 1.5s ease forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 2s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.glass-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+}

@@ -16,20 +16,14 @@ const AuthPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.email && formData.password) {
-      console.log('User logged in:', formData);
       navigate('/home');
     } else {
       alert('Please fill in all fields');
     }
   };
 
-  const handleGoogleLogin = () => {
-    alert('Should add Google OAuth');
-  };
-
-  const handleFacebookLogin = () => {
-    alert('Should add Facebook OAuth');
-  };
+  const handleGoogleLogin = () => alert('Should add Google OAuth');
+  const handleFacebookLogin = () => alert('Should add Facebook OAuth');
 
   return (
     <div

@@ -5,89 +5,130 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/dbConnect.js';
 import Player from './models/playerModel.js';
+import Document from './models/DocumentModel.js';
 
-dotenv.config();
+import express from "express"
+import { createServer } from "node:http"
+import { Server } from "socket.io"
+import dotenv from "dotenv"
+import cors from "cors"
+import connectDB from "./config/dbConnect.js"
+import Player from "./models/playerModel.js"
 
-const app = express();
-const PORT = process.env.PORT || 5002;
+dotenv.config()
 
-app.use(express.json());
-app.use(cors());
+const app = express()
+const PORT = process.env.PORT || 5001
 
-const server = createServer(app);
+app.use(express.json())
+
+const server = createServer(app)
 
 const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:5174",
-        methods: ["GET", "POST"]
-    }
-});
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
+})
 
-// Connect to MongoDB
-connectDB().then(() => {
-    console.log("Connected to MongoDB");
-}).catch(err => {
-    console.error("MongoDB connection error:", err);
-});
+await connectDB()
 
 app.get("/", (req, res) => {
-    res.send("Hello from the socket server");
-});
+  res.send("Hello from the socket server")
+})
+const emailToSocketIdMap = new Map()
+const socketidToEmailMap = new Map()
 
-io.on('connection', (socket) => {
-    console.log(`New connection: ${socket.id}`);
+io.on("connection", (socket) => {
+  console.log(`New connection: ${socket.id}`)
 
-    socket.on('join', async ({ x, y, room }) => {
-        try {
-            // Store the player in the database
-            const newPlayer = await Player.create({ socketId: socket.id, x, y, room });
+  socket.on("join", async (data) => {
+    const { x, y, room } = data
 
-            // Join the room
-            socket.join(room);
+    try {
+      await Player.create({ socketId: socket.id, x, y, room })
+      socket.join(room)
 
-            // Get all players in the room and send to the new player
-            const players = await Player.find({ room });
-            socket.emit('currentPlayers', players);
+      // Send all current players in the room to the new player
+      const players = await Player.find({ room })
+      socket.emit("currentPlayers", players)
 
-            // Notify others in the room about the new player
-            socket.to(room).emit('newPlayer', { socketId: newPlayer.socketId, x, y });
-
-        } catch (error) {
-            console.error('Error adding player:', error);
-            socket.emit('error', { message: 'Failed to join the game.' });
-        }
+      // Notify others about the new player
+      socket.to(room).emit("newPlayer", { socketId: socket.id, x, y })
+    } catch (error) {
+      console.error("Error adding player:", error)
+    }
     });
 
-    socket.on('movement', async ({ x, y, room }) => {
-        try {
-            // Update the player's position in the database
-            await Player.findOneAndUpdate({ socketId: socket.id }, { x, y });
-
-            // Broadcast movement update only to others in the same room
-            socket.to(room).emit('move', { socketId: socket.id, x, y });
-
-        } catch (error) {
-            console.error('Error updating movement:', error);
+    socket.on("join-doc", async (docId) => {
+        socket.join(docId);
+        const doc = await Document.findById(docId);
+        if (doc) {
+          socket.emit("load-doc", doc.content);
         }
-    });
+      });
+    
+      socket.on("edit-doc", async ({ docId, content }) => {
+        await Document.findByIdAndUpdate(docId, { content });
+        socket.to(docId).emit("update-doc", content);
+    })
 
-    socket.on('disconnect', async () => {
-        try {
-            // Remove player from the database
-            const player = await Player.findOneAndDelete({ socketId: socket.id });
+  socket.on("movement", async (data) => {
+    const { x, y, room } = data
 
-            if (player) {
-                // Notify other players in the room that this player left
-                socket.to(player.room).emit('playerLeft', { socketId: socket.id });
-            }
+    try {
+      await Player.findOneAndUpdate({ socketId: socket.id }, { x, y })
 
-        } catch (error) {
-            console.error('Error removing player:', error);
-        }
-    });
-});
+      // Broadcast to all clients in the room except the sender
+      socket.to(room).emit("movementUpdate", { socketId: socket.id, x, y })
+    } catch (error) {
+      console.error("Error updating movement:", error)
+    }
+  })
+
+  socket.on("disconnect", async () => {
+    console.log(`Player disconnected: ${socket.id}`)
+
+    try {
+      const player = await Player.findOneAndDelete({ socketId: socket.id })
+
+      if (player) {
+        socket.to(player.room).emit("playerLeft", { socketId: socket.id })
+      }
+    } catch (error) {
+      console.error("Error removing player:", error)
+    }
+  })
+  //web rtc server
+  socket.on("room:join", (data) => {
+    const { email, room } = data
+    emailToSocketIdMap.set(email, socket.id)
+    socketidToEmailMap.set(socket.id, email)
+    io.to(room).emit("user:joined", { email, id: socket.id })
+    socket.join(room)
+    io.to(socket.id).emit("room:join", data)
+  })
+
+  socket.on("user:call", ({ to, offer }) => {
+    io.to(to).emit("incomming:call", { from: socket.id, offer })
+  })
+
+  socket.on("call:accepted", ({ to, ans }) => {
+    io.to(to).emit("call:accepted", { from: socket.id, ans })
+  })
+
+  socket.on("peer:nego:needed", ({ to, offer }) => {
+    console.log("peer:nego:needed", offer)
+    io.to(to).emit("peer:nego:needed", { from: socket.id, offer })
+  })
+
+  socket.on("peer:nego:done", ({ to, ans }) => {
+    console.log("peer:nego:done", ans)
+    io.to(to).emit("peer:nego:final", { from: socket.id, ans })
+  })
+})
 
 server.listen(PORT, () => {
-    console.log(`Socket Server is running on port ${PORT}`);
-    console.log(`Access server on http://localhost:${PORT}`);
-});
+  console.log(`Socket Server is running on port ${PORT}`)
+  console.log(`Access server on http://localhost:${PORT}`)
+})
