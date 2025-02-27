@@ -17,10 +17,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-<<<<<<< HEAD
     "google-auth-library": "^9.15.1",
-=======
->>>>>>> 7a781b56a6c7745155a2674c96d725a43ab3a293
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.0",
     "nodemon": "^3.1.9",
