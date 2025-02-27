@@ -13,7 +13,7 @@ import AuthPage from "./components/AuthPage";
 import HomePage from "./components/HomePage";
 import GamesPage from "./components/GamesPage";
 import Todo from "./components/Todo";
-import StickyNotes from "./components/StickyNotes";
+// import StickyNotes from "./components/StickyNotes";
 
 import AfterAuth from "./pages/AfterAuth";
 const App = () => {
