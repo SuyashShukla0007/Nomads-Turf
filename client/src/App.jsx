@@ -9,6 +9,8 @@ import ChooseWorkspace from "./pages/ChooseWorkspace";
 import TicTacToe from "./components/Workspace/popUps/TicTacToe";
 import Guess from "./components/Workspace/popUps/Guess";
 import GamesPage from "./components/GamesPage";
+import Todo from "./components/Todo";
+import StickyNotes from "./components/StickyNotes";
 
 const App = () => {
   return (
@@ -16,6 +18,8 @@ const App = () => {
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/home" element={<PhaserGame />} />
+      <Route path="/todo" element={<Todo />} />
+      <Route path="/sn" element={<StickyNotes />} />
 
       <Route path="/workspace/:space" element={<PhaserGame />} />
       <Route path="/workspaces" element={<ChooseWorkspace />} />
