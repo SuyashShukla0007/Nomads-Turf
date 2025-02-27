@@ -13,6 +13,7 @@ app.listen(PORT, () => {
 import connectDB from "./config/dbConnect.js";
 connectDB();
 
+<<<<<<< HEAD
 const corsOptions = {
   origin: (origin, callback) => {
       const allowedOrigins = [process.env.CORS_ORIGIN ,'http://localhost:5173', 'http://127.0.0.1'];
@@ -28,6 +29,13 @@ const corsOptions = {
   optionsSuccessStatus: 204, // For legacy browsers
 };
 app.use(cors(corsOptions));
+=======
+app.use(cors(
+  {
+    origin:"http://localhost:5174",
+  }
+));
+>>>>>>> 7a781b56a6c7745155a2674c96d725a43ab3a293
 
 app.get("/", (req, res) => {
   res.send("Hello from the server");

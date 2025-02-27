@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { FaUndo, FaRedo, FaTrash, FaPencilAlt, FaSave, FaPalette } from "react-icons/fa";
-import tileset from "../assets/space1/tileset.png"; 
+import tileset from "../assets/space1/tileset.png";
 
 const CollaborativeBoard = () => {
   const canvasRef = useRef(null);
@@ -10,26 +10,53 @@ const CollaborativeBoard = () => {
   const [redoStack, setRedoStack] = useState([]);
   const [brushSize, setBrushSize] = useState(4);
   const [brushColor, setBrushColor] = useState("#000000");
-  const [canvasImage, setCanvasImage] = useState(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    canvas.width = window.innerWidth * 0.85; 
-    canvas.height = window.innerHeight * 0.7; 
-    canvas.style.cursor = "crosshair";
-
     const context = canvas.getContext("2d");
+    canvas.width = window.innerWidth * 0.85;
+    canvas.height = window.innerHeight * 0.7;
+    canvas.style.cursor = "crosshair";
     context.lineCap = "round";
-    context.strokeStyle = brushColor; 
-    context.lineWidth = brushSize;
     contextRef.current = context;
+    saveState();
+  }, []);
 
-    if (canvasImage) {
-      const img = new Image();
-      img.src = canvasImage;
-      img.onload = () => context.drawImage(img, 0, 0);
-    }
-  }, [brushSize, brushColor, canvasImage]);
+  useEffect(() => {
+    contextRef.current.strokeStyle = brushColor;
+    contextRef.current.lineWidth = brushSize;
+  }, [brushSize, brushColor]);
+
+  const saveState = () => {
+    const imageData = canvasRef.current.toDataURL();
+    setHistory((prev) => [...prev, imageData]);
+    setRedoStack([]);
+  };
+
+  const restoreCanvas = (imageData) => {
+    const image = new Image();
+    image.src = imageData;
+    image.onload = () => {
+      contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      contextRef.current.drawImage(image, 0, 0);
+    };
+  };
+
+  const handleUndo = () => {
+    if (history.length <= 1) return;
+    const prevState = history[history.length - 2];
+    setRedoStack((prev) => [history[history.length - 1], ...prev]);
+    setHistory((prev) => prev.slice(0, -1));
+    restoreCanvas(prevState);
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+    const nextState = redoStack[0];
+    setHistory((prev) => [...prev, nextState]);
+    setRedoStack((prev) => prev.slice(1));
+    restoreCanvas(nextState);
+  };
 
   const startDrawing = ({ nativeEvent }) => {
     const { offsetX, offsetY } = nativeEvent;
@@ -52,58 +79,15 @@ const CollaborativeBoard = () => {
     saveState();
   };
 
-  const saveState = () => {
-    const canvas = canvasRef.current;
-    const imageData = canvas.toDataURL();
-    setHistory((prev) => [...prev, imageData]);
-    setRedoStack([]); // Reset redo stack when saving new state
-    setCanvasImage(imageData);
-  };
-
-  const restoreCanvas = (imageData) => {
-    const canvas = canvasRef.current;
-    const context = contextRef.current;
-    const image = new Image();
-    image.src = imageData;
-    image.onload = () => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(image, 0, 0);
-    };
-    setCanvasImage(imageData);
-  };
-
-  const handleUndo = () => {
-    if (history.length === 0) return;
-    const prevState = history[history.length - 1]; // Get the last state in history
-    const newHistory = history.slice(0, history.length - 1); // Create a new array excluding the last state
-    setHistory(newHistory);
-    setRedoStack((prev) => [...prev, canvasRef.current.toDataURL()]); // Save the current canvas state to redo stack
-    restoreCanvas(prevState); // Restore the previous state
-  };
-
-  const handleRedo = () => {
-    if (redoStack.length === 0) return;
-    const nextState = redoStack[redoStack.length - 1]; // Get the last state in redo stack
-    const newRedoStack = redoStack.slice(0, redoStack.length - 1); // Create a new array excluding the last state
-    setRedoStack(newRedoStack);
-    setHistory((prev) => [...prev, canvasRef.current.toDataURL()]); // Save the current canvas state to history
-    restoreCanvas(nextState); // Restore the next state
-  };
-
   const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    const context = contextRef.current;
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    setHistory([]); // Reset history
-    setRedoStack([]); // Reset redo stack
-    setCanvasImage(null); // Clear the canvas image
+    contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    saveState();
   };
 
   const saveDrawing = () => {
-    const canvas = canvasRef.current;
     const link = document.createElement("a");
     link.download = "drawing.png";
-    link.href = canvas.toDataURL("image/png");
+    link.href = canvasRef.current.toDataURL("image/png");
     link.click();
   };
 
