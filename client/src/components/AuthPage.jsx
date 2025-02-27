@@ -16,20 +16,14 @@ const AuthPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.email && formData.password) {
-      console.log('User logged in:', formData);
       navigate('/home');
     } else {
       alert('Please fill in all fields');
     }
   };
 
-  const handleGoogleLogin = () => {
-    alert('Should add Google OAuth');
-  };
-
-  const handleFacebookLogin = () => {
-    alert('Should add Facebook OAuth');
-  };
+  const handleGoogleLogin = () => alert('Should add Google OAuth');
+  const handleFacebookLogin = () => alert('Should add Facebook OAuth');
 
   return (
     <div
@@ -74,7 +68,7 @@ const AuthPage = () => {
             required
           />
           <button
-          onClick={()=>{navigate('/workspaces')}}
+          onClick={()=>{navigate('/after-auth')}}
             type="submit"
             className="w-full py-4 bg-[#696137] text-white font-medium rounded-full shadow-xl hover:scale-105 transition-transform duration-300"
           >

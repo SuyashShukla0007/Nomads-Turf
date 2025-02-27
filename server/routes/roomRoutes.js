@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
 
 import { createRoom,getRoomById , joinRoom , getAllRooms} from '../controller/roomController.js';

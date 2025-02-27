@@ -1,100 +1,119 @@
-import express from 'express';
-import { createServer } from 'node:http';
-import {Server} from 'socket.io';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import connectDB from './config/dbConnect.js';
-import Player from './models/playerModel.js';
-import Document from './models/DocumentModel.js';
-
+import express from "express";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
+import dotenv from "dotenv";
+import cors from "cors";
+import connectDB from "./config/dbConnect.js";
+import Player from "./models/playerModel.js";
+import Document from "./models/DocumentModel.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-
 app.use(express.json());
+app.use(cors());
 
 const server = createServer(app);
-
 const io = new Server(server, {
-    cors: {
-      origin: "http://localhost:5173",
-      methods: ["GET", "POST"]
-    }
-  });
+  cors: {
+    origin: "http://localhost:5174",
+    methods: ["GET", "POST"],
+  },
+});
 
+// Connect to MongoDB
 await connectDB();
 
 app.get("/", (req, res) => {
-    res.send("Hello from the socket server");
+  res.send("Hello from the socket server");
 });
 
+const players = {};
 
-io.on('connection', (socket) => {
-    console.log(`New connection: ${socket.id}`);
+io.on("connection", (socket) => {
+  console.log(`New connection: ${socket.id}`);
 
-    socket.on('join', async (data) => {
-        const { x, y, room } = data;
+  // Handle player joining
+  socket.on("join", async (playerInfo) => {
+    players[socket.id] = {
+      socketId: socket.id,
+      x: playerInfo.x,
+      y: playerInfo.y,
+    };
+    socket.join(playerInfo.room);
+    socket.emit("currentPlayers", Object.values(players));
+    socket.broadcast.emit("newPlayer", players[socket.id]);
+  });
 
-        try {
-            await Player.create({ socketId: socket.id, x, y, room });
-            socket.join(room);
+  // Handle player movement
+  socket.on("movement", async (data) => {
+    const { x, y, room } = data;
 
-            // Send all current players in the room to the new player
-            const players = await Player.find({ room });
-            socket.emit('currentPlayers', players);
+    try {
+      if (players[socket.id]) {
+        players[socket.id].x = x;
+        players[socket.id].y = y;
 
-            // Notify others about the new player
-            socket.to(room).emit('newPlayer', { socketId: socket.id, x, y });
-        } catch (error) {
-            console.error('Error adding player:', error);
-        }
-    });
+        // Broadcast to all clients in the room except the sender
+        socket.to(room).emit("movementUpdate", { socketId: socket.id, x, y });
+      }
+    } catch (error) {
+      console.error("Error updating movement:", error);
+    }
+  });
 
-    socket.on("join-doc", async (docId) => {
-        socket.join(docId);
-        const doc = await Document.findById(docId);
-        if (doc) {
-          socket.emit("load-doc", doc.content);
-        }
-      });
-    
-      socket.on("edit-doc", async ({ docId, content }) => {
-        await Document.findByIdAndUpdate(docId, { content });
-        socket.to(docId).emit("update-doc", content);
-      });
+  // Handle player disconnection
+  socket.on("disconnect", async () => {
+    console.log(`Player disconnected: ${socket.id}`);
+    delete players[socket.id];
+    socket.broadcast.emit("playerDisconnected", socket.id);
+  });
 
-    socket.on('movement', async (data) => {
-        const { x, y, room } = data;
+  // Document collaboration
+  socket.on("join-doc", async (docId) => {
+    socket.join(docId);
+    const doc = await Document.findById(docId);
+    if (doc) {
+      socket.emit("load-doc", doc.content);
+    }
+  });
 
-        try {
-            await Player.findOneAndUpdate({ socketId: socket.id }, { x, y });
+  socket.on("edit-doc", async ({ docId, content }) => {
+    await Document.findByIdAndUpdate(docId, { content });
+    socket.to(docId).emit("update-doc", content);
+  });
 
-            // Broadcast to all clients in the room except the sender
-            socket.to(room).emit('movementUpdate', { socketId: socket.id, x, y });
-        } catch (error) {
-            console.error('Error updating movement:', error);
-        }
-    });
+  // WebRTC signaling
+  socket.on("room:join", (data) => {
+    const { email, room } = data;
+    socket.join(room);
+    io.to(room).emit("user:joined", { email, id: socket.id });
+    io.to(socket.id).emit("room:join", data);
+  });
 
-    socket.on('disconnect', async () => {
-        console.log(`Player disconnected: ${socket.id}`);
+  socket.on("user:call", ({ to, offer }) => {
+    io.to(to).emit("incoming:call", { from: socket.id, offer });
+  });
 
-        try {
-            const player = await Player.findOneAndDelete({ socketId: socket.id });
+  socket.on("call:accepted", ({ to, ans }) => {
+    io.to(to).emit("call:accepted", { from: socket.id, ans });
+  });
 
-            if (player) {
-                socket.to(player.room).emit('playerLeft', { socketId: socket.id });
-            }
-        } catch (error) {
-            console.error('Error removing player:', error);
-        }
-    });
+  socket.on("peer:nego:needed", ({ to, offer }) => {
+    console.log("peer:nego:needed", offer);
+    io.to(to).emit("peer:nego:needed", { from: socket.id, offer });
+  });
+
+  socket.on("peer:nego:done", ({ to, ans }) => {
+    console.log("peer:nego:done", ans);
+    io.to(to).emit("peer:nego:final", { from: socket.id, ans });
+  });
 });
 
+// Start the server
 server.listen(PORT, () => {
-    console.log(`Socket Server is running on port ${PORT}`);
-    console.log(`Access server on http://localhost:${PORT}`);
+  console.log(`Socket Server is running on port ${PORT}`);
+  console.log(`Access server on http://localhost:${PORT}`);
 });
