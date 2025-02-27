@@ -27,3 +27,6 @@ app.use("/room", roomRoutes);
 
 import documentRoutes from "./routes/documentRoutes.js";
 app.use("/document", documentRoutes);
+
+import geminiRoutes from "./routes/geminiRoutes.js";
+app.use("/gemini", geminiRoutes);
