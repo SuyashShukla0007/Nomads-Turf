@@ -2,10 +2,11 @@ import room from "../models/roomModel.js";
 import User from "../models/userModel.js";
 
 export const createRoom = async (req, res) =>{
-    const {name, users,createdBy} = req.body;
+    const {id, users,createdBy,roomNo} = req.body;
     try {
         const newRoom = new room({
-            name,
+            id,
+            roomNo,
             users,
             createdBy
         });
@@ -17,8 +18,8 @@ export const createRoom = async (req, res) =>{
 }
 
 export const joinRoom= async(req,res)=>{
-    const {roomId,userId}=req.body;
-    const roomToJoin=await room.findById(roomId);
+    const {id,userId}=req.body;
+    const roomToJoin=await room.find({id:id});
     roomToJoin.users.push(userId);
     await roomToJoin.save();
     res.status(200).json(roomToJoin);
