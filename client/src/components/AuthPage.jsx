@@ -1,8 +1,9 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { FcGoogle } from "react-icons/fc"
+import Cookies from "js-cookie"
 import { AiFillFacebook } from "react-icons/ai"
-
+import axios from "axios"
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true)
   const [formData, setFormData] = useState({ email: "", password: "" })
@@ -13,10 +14,18 @@ const AuthPage = () => {
 
   const toggleForm = () => setIsLogin(!isLogin)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (formData.email && formData.password) {
-      navigate("/home")
+      const user = await axios.post(
+        "http://localhost:3000/user/register",
+        formData
+      )
+      console.log(formData)
+      console.log(user)
+      Cookies.set("user", user)
+
+      navigate("/workspace/2")
     } else {
       alert("Please fill in all fields")
     }

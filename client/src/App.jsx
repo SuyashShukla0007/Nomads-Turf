@@ -12,6 +12,8 @@ import { Routes, Route } from "react-router-dom"
 import AuthPage from "./components/AuthPage"
 import HomePage from "./components/HomePage"
 import GamesPage from "./components/GamesPage"
+import Todo from "./components/Todo"
+// import StickyNotes from "./components/StickyNotes";
 
 import AfterAuth from "./pages/AfterAuth"
 const App = () => {
@@ -20,11 +22,12 @@ const App = () => {
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/home" element={<PhaserGame />} />
+
+      <Route path="/todo" element={<Todo />} />
       <Route path="/call" element={<Lobby />} />
       <Route path="/call/room/:roomId" element={<RoomPage />} />
       <Route path="/after-auth" element={<AfterAuth />}></Route>
       {/* <Route path="/phaser" element={<PhaserGame />} /> */}
-
       <Route path="/workspace/:space" element={<PhaserGame />} />
       <Route path="/workspaces" element={<ChooseWorkspace />} />
       <Route path="/chat" element={<Chat />} />

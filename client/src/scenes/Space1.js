@@ -1,3 +1,4 @@
+// Space1.js
 import Phaser from 'phaser';
 import { io } from 'socket.io-client';
 import tilemap from "../assets/space2/map.json";
@@ -6,11 +7,12 @@ import interior from "../assets/space2/Interiors_free_32x32.png";
 import room from "../assets/space2/Room_Builder_free_32x32.png";
 
 export default class Space1 extends Phaser.Scene {
-  constructor() {
+  constructor(props) {
     super("GameScene");
     this.localPlayer = null;
     this.otherPlayers = {};
     this.socket = null;
+    this.onShowPopup = props.onShowPopup; // Store the popup function
   }
 
   preload() {
@@ -95,10 +97,6 @@ export default class Space1 extends Phaser.Scene {
       this.removeOtherPlayer(socketId);
     });
   }
-
-
-  
-
 
   createLocalPlayer(playerInfo) {
     this.localPlayer = this.physics.add.sprite(playerInfo.x, playerInfo.y, "player");
@@ -207,6 +205,17 @@ export default class Space1 extends Phaser.Scene {
         y: this.localPlayer.y,
         room: "space1" // Ensure you send the room information
       });
+    }
+
+    // Check for nearby players
+    const proximityThreshold = 100; // Adjust this value as needed
+    for (const socketId in this.otherPlayers) {
+      const otherPlayer = this.otherPlayers[socketId];
+      const distance = Phaser.Math.Distance.Between(this.localPlayer.x, this.localPlayer.y, otherPlayer.x, otherPlayer.y);
+      
+      if (distance < proximityThreshold) {
+        this.onShowPopup(`Hello, ${socketId}!`); // Call the popup function
+      }
     }
   }
 }
