@@ -1,29 +1,29 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FcGoogle } from 'react-icons/fc';
-import { AiFillFacebook } from 'react-icons/ai';
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { FcGoogle } from "react-icons/fc"
+import { AiFillFacebook } from "react-icons/ai"
 
 const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true)
+  const [formData, setFormData] = useState({ email: "", password: "" })
+  const navigate = useNavigate()
 
   const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value })
 
-  const toggleForm = () => setIsLogin(!isLogin);
+  const toggleForm = () => setIsLogin(!isLogin)
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (formData.email && formData.password) {
-      navigate('/home');
+      navigate("/home")
     } else {
-      alert('Please fill in all fields');
+      alert("Please fill in all fields")
     }
-  };
+  }
 
-  const handleGoogleLogin = () => alert('Should add Google OAuth');
-  const handleFacebookLogin = () => alert('Should add Facebook OAuth');
+  const handleGoogleLogin = () => alert("Should add Google OAuth")
+  const handleFacebookLogin = () => alert("Should add Facebook OAuth")
 
   return (
     <div
@@ -32,7 +32,7 @@ const AuthPage = () => {
     >
       <div className="w-full max-w-md bg-[#C0BBB5]/70 p-8 rounded-3xl shadow-2xl backdrop-blur-md transform hover:scale-105 transition-transform duration-500">
         <h2 className="text-3xl font-bold text-center mb-8 text-[#696137]">
-          {isLogin ? 'Welcome Back!' : 'Create Your Account'}
+          {isLogin ? "Welcome Back!" : "Create Your Account"}
         </h2>
         <div className="flex justify-center gap-4 mb-6">
           <button
@@ -68,11 +68,13 @@ const AuthPage = () => {
             required
           />
           <button
-          onClick={()=>{navigate('/after-auth')}}
+            onClick={() => {
+              navigate("/after-auth")
+            }}
             type="submit"
             className="w-full py-4 bg-[#696137] text-white font-medium rounded-full shadow-xl hover:scale-105 transition-transform duration-300"
           >
-            {isLogin ? 'Login' : 'Sign Up'}
+            {isLogin ? "Login" : "Sign Up"}
           </button>
         </form>
         <p className="mt-6 text-center text-[#525656]">
@@ -81,12 +83,12 @@ const AuthPage = () => {
             className="text-[#696137] cursor-pointer ml-1 hover:underline"
             onClick={toggleForm}
           >
-            {isLogin ? 'Sign Up' : 'Login'}
+            {isLogin ? "Sign Up" : "Login"}
           </span>
         </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AuthPage;
+export default AuthPage

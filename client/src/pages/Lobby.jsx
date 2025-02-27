@@ -6,36 +6,17 @@ const Lobby = () => {
   const [email, setEmail] = useState("")
   const [room, setRoom] = useState("")
 
-  const socket = useSocket()
+  // const socket = useSocket()
   const navigate = useNavigate()
 
-  const handleSubmitForm = useCallback(
-    (e) => {
-      e.preventDefault()
-      socket.emit("room:join", { email, room })
-    },
-    [email, room, socket]
-  )
-
-  const handleJoinRoom = useCallback(
-    (data) => {
-      const { email, room } = data
-      navigate(`/call/room/${room}`)
-    },
-    [navigate]
-  )
-
-  useEffect(() => {
-    socket.on("room:join", handleJoinRoom)
-    return () => {
-      socket.off("room:join", handleJoinRoom)
-    }
-  }, [socket, handleJoinRoom])
-
   return (
-    <div className="bg-white">
+    <div>
       <h1>Lobby</h1>
-      <form onSubmit={handleSubmitForm}>
+      <form
+        onSubmit={() => {
+          navigate(`/call/room/${room}`)
+        }}
+      >
         <label htmlFor="email">Email ID</label>
         <input
           type="email"
