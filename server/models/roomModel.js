@@ -12,6 +12,10 @@ const roomSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'User',
         required:true,
+    },
+    todo:{
+        type:Array,
+        default:[]
     }
 })
 

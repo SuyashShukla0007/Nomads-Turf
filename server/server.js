@@ -13,7 +13,11 @@ app.listen(PORT, () => {
 import connectDB from "./config/dbConnect.js";
 connectDB();
 
-app.use(cors());
+app.use(cors(
+  {
+    origin:"http://localhost:5174",
+  }
+));
 
 app.get("/", (req, res) => {
   res.send("Hello from the server");
