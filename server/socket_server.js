@@ -6,6 +6,7 @@ import cors from "cors";
 import connectDB from "./config/dbConnect.js";
 import Player from "./models/playerModel.js";
 import Document from "./models/DocumentModel.js";
+import { Whiteboard } from "./models/whiteboardModel.js"; // Import the model
 
 dotenv.config();
 
@@ -110,6 +111,49 @@ io.on("connection", (socket) => {
     console.log("peer:nego:done", ans);
     io.to(to).emit("peer:nego:final", { from: socket.id, ans });
   });
+  // User joins a whiteboard room
+  socket.on("join-whiteboard", async (roomId) => {
+    socket.join(roomId);
+
+    // Find or create a whiteboard for the room
+    let whiteboard = await Whiteboard.findOne({ roomId });
+
+    if (!whiteboard) {
+      whiteboard = new Whiteboard({ roomId, drawings: [] });
+      await whiteboard.save();
+    }
+
+    // Send existing drawings to the user
+    socket.emit("load-whiteboard", whiteboard.drawings);
+  });
+
+  // Handle drawing events
+  socket.on("draw", async ({ roomId, data }) => {
+    try {
+      const whiteboard = await Whiteboard.findOneAndUpdate(
+        { roomId },
+        { $push: { drawings: data } }, // Append new drawing data
+        { new: true }
+      );
+
+      // Broadcast new drawing to other users
+      socket.to(roomId).emit("draw", data);
+    } catch (error) {
+      console.error("Error saving drawing:", error);
+    }
+  });
+
+  // Handle whiteboard clearing
+  socket.on("clear-whiteboard", async (roomId) => {
+    try {
+      await Whiteboard.findOneAndUpdate({ roomId }, { drawings: [] }); // Clear in DB
+      io.to(roomId).emit("clear-whiteboard"); // Notify all users
+    } catch (error) {
+      console.error("Error clearing whiteboard:", error);
+    }
+  });
+  
+
 });
 
 // Start the server
