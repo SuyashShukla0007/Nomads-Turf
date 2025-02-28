@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import { AiFillFacebook } from 'react-icons/ai';
+import dotenv from 'dotenv';
 import axios from "axios"; 
 import {GoogleOAuthProvider,GoogleLogin} from "@react-oauth/google";
 
@@ -18,7 +19,7 @@ const AuthPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.email && formData.password) {
-      navigate('/home');
+      navigate('/workspace/2');
     } else {
       alert('Please fill in all fields');
     }
