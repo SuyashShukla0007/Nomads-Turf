@@ -16,7 +16,19 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
     if (formData.email && formData.password) {
+
+      if (isLogin) {
+        const user = await axios.post(
+          "http://localhost:3000/user/login",
+          formData
+        )
+        console.log(user)
+        Cookies.set("user", user)
+        navigate("/workspace/2")
+      }
+
       const user = await axios.post(
         "http://localhost:3000/user/register",
         formData

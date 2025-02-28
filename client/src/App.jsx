@@ -38,8 +38,8 @@ const App = () => {
       <Route path="/workspaces" element={<ChooseWorkspace />}></Route>
       <Route path="/workspace/:space" element={<PhaserGame />}></Route>
       <Route path="/games" element={<GamesPage />} />
-      <Route path="/games/tic-tac-toe" element={<TicTacToe />} />
-      <Route path="/games/guess" element={<Guess />} />
+      {/* <Route path="/games/tic-tac-toe" element={<TicTacToe />} /> */}
+      {/* <Route path="/games/guess" element={<Guess />} /> */}
     </Routes>
   )
 }
