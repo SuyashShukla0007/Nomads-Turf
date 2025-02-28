@@ -216,7 +216,7 @@ function Guess() {
   
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-        {popUp && (
+      
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="popUpContent w-96 p-6 bg-gray-800 text-white rounded-lg shadow-lg flex flex-col items-center">
               <h2 className="text-xl font-bold mb-2 text-blue-400">Guess Game</h2>
@@ -256,12 +256,8 @@ function Guess() {
               </div>
             </div>
           </div>
-        )}
-        {!popUp && (
-          <button className="h-32 w-32 bg-blue-500 text-white rounded-lg shadow-lg text-xl font-bold hover:bg-blue-600 transition" onClick={() => setPopUp(true)}>
-            Play Game
-          </button>
-        )}
+        
+       
       </div>
     );
   }

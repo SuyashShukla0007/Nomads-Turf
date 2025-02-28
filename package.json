@@ -11,6 +11,7 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "js-cookie": "^3.0.5",
     "react-scripts": "^5.0.1"
   }
 }

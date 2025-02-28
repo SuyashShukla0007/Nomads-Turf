@@ -1,16 +1,18 @@
-import Phaser from 'phaser';
-import { io } from 'socket.io-client';
+// Space1.js
+import Phaser from "phaser";
+import { io } from "socket.io-client";
 import tilemap from "../assets/space2/map.json";
 import player from "../assets/space2/player.png";
 import interior from "../assets/space2/Interiors_free_32x32.png";
 import room from "../assets/space2/Room_Builder_free_32x32.png";
 
 export default class Space1 extends Phaser.Scene {
-  constructor() {
+  constructor(props) {
     super("GameScene");
     this.localPlayer = null;
     this.otherPlayers = {};
     this.socket = null;
+    // this.onShowPopup = props.onShowPopup; // Store the popup function
   }
 
   preload() {
@@ -27,36 +29,58 @@ export default class Space1 extends Phaser.Scene {
 
   create() {
     // Setup socket connection
-    this.socket = io("http://localhost:5002");
+    this.socket = io("http://localhost:5000");
+
+    //camera follow player
 
     // Setup map
     const map = this.make.tilemap({ key: "map" });
-    const interiorImage = map.addTilesetImage("Interiors_free_32x32", "interior");
+    const interiorImage = map.addTilesetImage(
+      "Interiors_free_32x32",
+      "interior"
+    );
     const RoomImage = map.addTilesetImage("Room_Builder_free_32x32", "room");
 
-    this.groundLayer = map.createLayer("floor", [RoomImage, interiorImage], 0, 0);
+    this.groundLayer = map.createLayer(
+      "floor",
+      [RoomImage, interiorImage],
+      0,
+      0
+    );
     this.floor = map.createLayer("normal", [RoomImage, interiorImage], 0, 0);
-    this.collisionLayer = map.createLayer("collision", [RoomImage, interiorImage], 0, 0);
-    
+    this.collisionLayer = map.createLayer(
+      "collision",
+      [RoomImage, interiorImage],
+      0,
+      0
+    );
+    // Smooth follow
+    // Smooth follow
     // Set collision properties for the collision layer
     this.collisionLayer.setCollisionByProperty({ collides: true });
 
     // Setup animations
     this.anims.create({
       key: "sideway",
-      frames: this.anims.generateFrameNumbers("player", { frames: [1, 2, 3, 4, 5] }),
+      frames: this.anims.generateFrameNumbers("player", {
+        frames: [1, 2, 3, 4, 5],
+      }),
       frameRate: 10,
     });
 
     this.anims.create({
       key: "down",
-      frames: this.anims.generateFrameNumbers("player", { frames: [19, 20, 21, 22, 23] }),
+      frames: this.anims.generateFrameNumbers("player", {
+        frames: [19, 20, 21, 22, 23],
+      }),
       frameRate: 10,
     });
 
     this.anims.create({
       key: "up",
-      frames: this.anims.generateFrameNumbers("player", { frames: [6, 7, 8, 9, 10] }),
+      frames: this.anims.generateFrameNumbers("player", {
+        frames: [6, 7, 8, 9, 10],
+      }),
       frameRate: 10,
     });
 
@@ -87,21 +111,54 @@ export default class Space1 extends Phaser.Scene {
 
     // Handle player movement
     this.socket.on("movementUpdate", (playerInfo) => {
-      this.updateOtherPlayerPosition(playerInfo.socketId, playerInfo.x, playerInfo.y);
+      this.updateOtherPlayerPosition(
+        playerInfo.socketId,
+        playerInfo.x,
+        playerInfo.y
+      );
     });
 
     // Handle player disconnection
     this.socket.on("playerDisconnected", (socketId) => {
       this.removeOtherPlayer(socketId);
     });
+
+    const array = [
+      [
+        1465, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1226,
+        1227, 1224, 1225, 1430, 1431, 1242, 1243, 741, 52, 52, 52, 52, 52, 52,
+        52, 52, 741, 1240, 1241, 1430, 1431, 1258, 1259, 757, 49, 68, 50, 68,
+        50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 51, 757, 1256, 1257,
+        1430, 1431, 1430, 1431, 1430, 1431, 1430, 1465, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1488, 1488, 1464, 1465, 1488, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430, 1431,
+        1430, 1431, 1430, 1431, 536870961, 2684354609, 1430, 1431, 1610612788,
+        1610612804, 2684354628, 2684354612, 1430, 1431, 536870963, 2684354611,
+        1430, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1430, 3221226936,
+        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+        1073743312, 1073743312, 1073743312, 3221226937, 1073743312, 1073743312,
+        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+        1073743312, 1073743312, 1073743312, 1073743312, 3221226936, 1073743312,
+        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+        1073743312, 1073743312, 3221226937,
+      ],
+    ];
+
+    array.forEach((element) => {
+      this.collisionLayer.setCollision(element);
+    });
   }
 
-
-  
-
-
   createLocalPlayer(playerInfo) {
-    this.localPlayer = this.physics.add.sprite(playerInfo.x, playerInfo.y, "player");
+    this.localPlayer = this.physics.add.sprite(
+      playerInfo.x,
+      playerInfo.y,
+      "player"
+    );
     this.localPlayer.setScale(1.5);
     this.localPlayer.setSize(16, 24);
     this.localPlayer.setOffset(0, 8);
@@ -110,7 +167,11 @@ export default class Space1 extends Phaser.Scene {
   }
 
   createOtherPlayer(playerInfo) {
-    const otherPlayer = this.physics.add.sprite(playerInfo.x, playerInfo.y, "player");
+    const otherPlayer = this.physics.add.sprite(
+      playerInfo.x,
+      playerInfo.y,
+      "player"
+    );
     otherPlayer.setScale(1.5);
     otherPlayer.setSize(16, 24);
     otherPlayer.setOffset(0, 8);
@@ -130,7 +191,7 @@ export default class Space1 extends Phaser.Scene {
 
     // Calculate distance
     const distance = Math.sqrt(dx * dx + dy * dy);
-    
+
     // If the distance is greater than a threshold, move towards the new position
     if (distance > 1) {
       otherPlayer.x += (dx / distance) * speed;
@@ -205,8 +266,19 @@ export default class Space1 extends Phaser.Scene {
       this.socket.emit("movement", {
         x: this.localPlayer.x,
         y: this.localPlayer.y,
-        room: "space1" // Ensure you send the room information
+        room: "space1", // Ensure you send the room information
       });
     }
+
+    // Check for nearby players
+    // const proximityThreshold = 100; // Adjust this value as needed
+    // for (const socketId in this.otherPlayers) {
+    //   const otherPlayer = this.otherPlayers[socketId];
+    //   const distance = Phaser.Math.Distance.Between(this.localPlayer.x, this.localPlayer.y, otherPlayer.x, otherPlayer.y);
+
+    //   if (distance < proximityThreshold) {
+    //     this.onShowPopup(`Hello, ${socketId}!`); // Call the popup function
+    //   }
+    // }
   }
 }

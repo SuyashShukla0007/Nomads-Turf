@@ -1,0 +1,115 @@
+/* Guess.css */
+
+body {
+  background-color: #1a202c; /* Dark background */
+  font-family: 'Arial', sans-serif; /* Clean font */
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.bg-gray-900 {
+  background-color: #1a202c;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.popUpContent {
+  width: 400px;
+  padding: 20px;
+  background-color: #2d3748; /* Darker background for pop-up */
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+  color: #63b3ed; /* Light blue for headings */
+}
+
+.bg-gray-700 {
+  background-color: #4a5568; /* Slightly lighter gray */
+}
+
+input {
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-color: #63b3ed; /* Light blue border on focus */
+  outline: none;
+}
+
+button {
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.bg-blue-500 {
+  background-color: #4299e1; /* Blue button */
+}
+
+.bg-blue-600 {
+  background-color: #3182ce; /* Darker blue on hover */
+}
+
+.bg-green-500 {
+  background-color: #48bb78; /* Green button */
+}
+
+.bg-green-600 {
+  background-color: #38a169; /* Darker green on hover */
+}
+
+.bg-gray-500 {
+  background-color: #a0aec0; /* Gray button */
+}
+
+.bg-gray-600 {
+  background-color: #718096; /* Darker gray on hover */
+}
+
+.text-sm {
+  font-size: 0.875rem; /* Smaller text for hints */
+}
+
+.text-lg {
+  font-size: 1.125rem; /* Larger text for messages */
+}
+
+.text-xl {
+  font-size: 1.25rem; /* Extra large text for headings */
+}
+
+.text-blue-400 {
+  color: #63b3ed; /* Light blue for headings */
+}
+
+.text-gray-300 {
+  color: #e2e8f0; /* Light gray for text */
+}
+
+.text-gray-200 {
+  color: #edf2f7; /* Slightly lighter gray for hints */
+}
