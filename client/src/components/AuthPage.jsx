@@ -16,7 +16,19 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
     if (formData.email && formData.password) {
+
+      if (isLogin) {
+        const user = await axios.post(
+          "http://localhost:3000/user/login",
+          formData
+        )
+        console.log(user)
+        Cookies.set("user", user)
+        navigate("/workspace/2")
+      }
+
       const user = await axios.post(
         "http://localhost:3000/user/register",
         formData
@@ -77,9 +89,7 @@ const AuthPage = () => {
             required
           />
           <button
-            onClick={() => {
-              navigate("/after-auth")
-            }}
+            
             type="submit"
             className="w-full py-4 bg-[#696137] text-white font-medium rounded-full shadow-xl hover:scale-105 transition-transform duration-300"
           >

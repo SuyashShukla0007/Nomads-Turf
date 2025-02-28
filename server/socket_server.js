@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
@@ -10,7 +11,7 @@ import Document from "./models/DocumentModel.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors());
@@ -70,19 +71,36 @@ io.on("connection", (socket) => {
     delete players[socket.id];
     socket.broadcast.emit("playerDisconnected", socket.id);
   });
+  // Example valid ObjectId
 
-  // Document collaboration
   socket.on("join-doc", async (docId) => {
-    socket.join(docId);
-    const doc = await Document.findById(docId);
-    if (doc) {
-      socket.emit("load-doc", doc.content);
+    try {
+      if (!mongoose.Types.ObjectId.isValid(docId)) {
+        console.error("Invalid document ID:", docId);
+        return socket.emit("error", "Invalid document ID");
+      }
+
+      const documentId = new mongoose.Types.ObjectId(docId);
+      socket.join(docId);
+      const doc = await Document.findById(documentId);
+
+      if (doc) {
+        socket.emit("load-doc", doc.content);
+      } else {
+        socket.emit("error", "Document not found");
+      }
+    } catch (error) {
+      console.error("Error fetching document:", error);
+      socket.emit("error", "Server error");
     }
   });
 
-  socket.on("edit-doc", async ({ docId, content }) => {
-    await Document.findByIdAndUpdate(docId, { content });
+  socket.on("edit-doc", async ({ content }) => {
+    const docId = "65dfe3b5c9a5b93f8a4e9d2a"; // Example document ID
     socket.to(docId).emit("update-doc", content);
+
+    // Optionally, save the content to the database
+    await Document.findByIdAndUpdate(docId, { content }, { new: true });
   });
 
   // WebRTC signaling
