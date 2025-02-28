@@ -1,13 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
-import { FaUndo, FaRedo, FaTrash, FaPencilAlt, FaSave, FaPalette } from "react-icons/fa";
+import { FaTrash, FaSave, FaPencilAlt, FaPalette } from "react-icons/fa";
+import { io } from "socket.io-client";
 import tileset from "../assets/space1/tileset.png";
+
+const socket = io("http://localhost:5000"); // Change this to your backend URL
 
 const CollaborativeBoard = () => {
   const canvasRef = useRef(null);
   const contextRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [history, setHistory] = useState([]);
-  const [redoStack, setRedoStack] = useState([]);
   const [brushSize, setBrushSize] = useState(4);
   const [brushColor, setBrushColor] = useState("#000000");
 
@@ -19,7 +20,22 @@ const CollaborativeBoard = () => {
     canvas.style.cursor = "crosshair";
     context.lineCap = "round";
     contextRef.current = context;
-    saveState();
+
+    const docId = "65dfe3b5c9a5b93f8a4e9d2a"; // Example document ID
+    socket.emit("join-doc", docId);
+
+    socket.on("load-doc", (dataUrl) => {
+      if (dataUrl) restoreCanvas(dataUrl);
+    });
+
+    socket.on("update-doc", (dataUrl) => {
+      restoreCanvas(dataUrl);
+    });
+
+    return () => {
+      socket.off("load-doc");
+      socket.off("update-doc");
+    };
   }, []);
 
   useEffect(() => {
@@ -27,35 +43,23 @@ const CollaborativeBoard = () => {
     contextRef.current.lineWidth = brushSize;
   }, [brushSize, brushColor]);
 
-  const saveState = () => {
-    const imageData = canvasRef.current.toDataURL();
-    setHistory((prev) => [...prev, imageData]);
-    setRedoStack([]);
+  const sendUpdate = () => {
+    const dataUrl = canvasRef.current.toDataURL();
+    socket.emit("edit-doc", { content: dataUrl });
   };
 
   const restoreCanvas = (imageData) => {
     const image = new Image();
     image.src = imageData;
     image.onload = () => {
-      contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      contextRef.current.clearRect(
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height
+      );
       contextRef.current.drawImage(image, 0, 0);
     };
-  };
-
-  const handleUndo = () => {
-    if (history.length <= 1) return;
-    const prevState = history[history.length - 2];
-    setRedoStack((prev) => [history[history.length - 1], ...prev]);
-    setHistory((prev) => prev.slice(0, -1));
-    restoreCanvas(prevState);
-  };
-
-  const handleRedo = () => {
-    if (redoStack.length === 0) return;
-    const nextState = redoStack[0];
-    setHistory((prev) => [...prev, nextState]);
-    setRedoStack((prev) => prev.slice(1));
-    restoreCanvas(nextState);
   };
 
   const startDrawing = ({ nativeEvent }) => {
@@ -76,12 +80,17 @@ const CollaborativeBoard = () => {
     if (!isDrawing) return;
     contextRef.current.closePath();
     setIsDrawing(false);
-    saveState();
+    sendUpdate();
   };
 
   const clearCanvas = () => {
-    contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    saveState();
+    contextRef.current.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    sendUpdate();
   };
 
   const saveDrawing = () => {
@@ -111,18 +120,6 @@ const CollaborativeBoard = () => {
       </h1>
 
       <div className="flex items-center space-x-6 bg-gradient-to-r from-blue-300 to-blue-300 p-4 rounded-2xl shadow-xl mb-6 backdrop-blur-lg">
-        <button
-          onClick={handleUndo}
-          className="flex items-center gap-2 p-2 text-white hover:bg-blue-400 rounded-lg transition-transform transform hover:scale-110"
-        >
-          <FaUndo /> Undo
-        </button>
-        <button
-          onClick={handleRedo}
-          className="flex items-center gap-2 p-2 text-white hover:bg-blue-400 rounded-lg transition-transform transform hover:scale-110"
-        >
-          <FaRedo /> Redo
-        </button>
         <button
           onClick={clearCanvas}
           className="flex items-center gap-2 p-2 text-white hover:bg-red-400 rounded-lg transition-transform transform hover:scale-110"

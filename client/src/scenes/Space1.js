@@ -29,10 +29,10 @@ export default class Space1 extends Phaser.Scene {
 
   create() {
     // Setup socket connection
-    this.socket = io("http://localhost:5001");
+    this.socket = io("http://localhost:5000");
 
     //camera follow player
-   
+
     // Setup map
     const map = this.make.tilemap({ key: "map" });
     const interiorImage = map.addTilesetImage(
@@ -54,8 +54,8 @@ export default class Space1 extends Phaser.Scene {
       0,
       0
     );
-// Smooth follow
-  // Smooth follow
+    // Smooth follow
+    // Smooth follow
     // Set collision properties for the collision layer
     this.collisionLayer.setCollisionByProperty({ collides: true });
 
@@ -123,8 +123,34 @@ export default class Space1 extends Phaser.Scene {
       this.removeOtherPlayer(socketId);
     });
 
+    const array = [
+      [
+        1465, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1226,
+        1227, 1224, 1225, 1430, 1431, 1242, 1243, 741, 52, 52, 52, 52, 52, 52,
+        52, 52, 741, 1240, 1241, 1430, 1431, 1258, 1259, 757, 49, 68, 50, 68,
+        50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 50, 68, 51, 757, 1256, 1257,
+        1430, 1431, 1430, 1431, 1430, 1431, 1430, 1465, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1488, 1488, 1464, 1465, 1488, 1488, 1488, 1488, 1488,
+        1488, 1488, 1488, 1488, 1464, 1431, 1430, 1431, 1430, 1431, 1430, 1431,
+        1430, 1431, 1430, 1431, 536870961, 2684354609, 1430, 1431, 1610612788,
+        1610612804, 2684354628, 2684354612, 1430, 1431, 536870963, 2684354611,
+        1430, 1431, 1430, 1431, 1430, 1431, 1430, 1431, 1430, 3221226936,
+        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+        1073743312, 1073743312, 1073743312, 3221226937, 1073743312, 1073743312,
+        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+        1073743312, 1073743312, 1073743312, 1073743312, 3221226936, 1073743312,
+        1073743312, 1073743312, 1073743312, 1073743312, 1073743312, 1073743312,
+        1073743312, 1073743312, 3221226937,
+      ],
+    ];
 
-    
+    array.forEach((element) => {
+      this.collisionLayer.setCollision(element);
+    });
   }
 
   createLocalPlayer(playerInfo) {
@@ -195,11 +221,7 @@ export default class Space1 extends Phaser.Scene {
       otherPlayer.destroy();
       delete this.otherPlayers[socketId];
     }
-
- 
-    
   }
-
 
   update() {
     if (!this.localPlayer) return;

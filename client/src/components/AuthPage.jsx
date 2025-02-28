@@ -89,9 +89,7 @@ const AuthPage = () => {
             required
           />
           <button
-            onClick={() => {
-              navigate("/after-auth")
-            }}
+            
             type="submit"
             className="w-full py-4 bg-[#696137] text-white font-medium rounded-full shadow-xl hover:scale-105 transition-transform duration-300"
           >
