@@ -271,14 +271,61 @@ export default class Space1 extends Phaser.Scene {
     }
 
     // Check for nearby players
-    // const proximityThreshold = 100; // Adjust this value as needed
-    // for (const socketId in this.otherPlayers) {
-    //   const otherPlayer = this.otherPlayers[socketId];
-    //   const distance = Phaser.Math.Distance.Between(this.localPlayer.x, this.localPlayer.y, otherPlayer.x, otherPlayer.y);
+    const proximityThreshold = 50;
+    const second = 60;
+    const third = 70;
+    
+    // Adjust this value as needed
+    for (const socketId in this.otherPlayers) {
+      const otherPlayer = this.otherPlayers[socketId];
+      const distance = Phaser.Math.Distance.Between(this.localPlayer.x, this.localPlayer.y, otherPlayer.x, otherPlayer.y);
+    
+      // Check if the message already exists
+      const existingMessage = document.getElementById(`message-${socketId}`);
+    
+      if (distance <= proximityThreshold || distance <= second || distance <= third) {
+        // If the message doesn't exist, create it
+        if (!existingMessage) {
+          const messageElement = document.createElement('a');
+          messageElement.id = `message-${socketId}`; // Unique ID for each message
+          messageElement.innerText = `Hello, sir can we chat!`;
+          messageElement.href = '/call/room/1'; // Set the link to navigate to /call
+          messageElement.style.position = 'absolute';
+          messageElement.style.color = 'blue';
+          messageElement.style.backgroundColor = 'white';
+          messageElement.style.border = '1px solid black';
+          messageElement.style.padding = '10px';
+          messageElement.style.zIndex = '1000'; // Ensure it appears above other elements
+          messageElement.style.left = `${this.localPlayer.x}px`; // Position it near the local player
+          messageElement.style.top = `${this.localPlayer.y}px`;
+    
+          // Add a click event listener to navigate to /call
+          messageElement.addEventListener('click', (event) => {
+            // Optionally remove the message immediately on click
+            document.body.removeChild(messageElement);
+    
+            // Navigate to /call
+            window.location.href = '/call'; // This should work
+          });
+    
+          document.body.appendChild(messageElement);
+    
+          // Optionally, remove the message after a few seconds if not clicked
+          setTimeout(() => {
+            if (document.body.contains(messageElement)) {
+              document.body.removeChild(messageElement);
+            }
+          }, 10000); // Adjust the duration as needed
+        }
+      } else {
+        // If the distance is greater than the thresholds and the message exists, remove it
+        if (existingMessage) {
+          document.body.removeChild(existingMessage);
+        }
+      }
+    }
 
-    //   if (distance < proximityThreshold) {
-    //     this.onShowPopup(`Hello, ${socketId}!`); // Call the popup function
-    //   }
-    // }
+
+    
   }
 }
